@@ -1,0 +1,70 @@
+<nav class="admin-navbar">
+  <div class="navbar-container">
+    <!-- Bouton retour -->
+    <button class="nav-back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>Retour au dashboard</span>
+    </button>
+
+    <!-- Logo/Titre -->
+    <div class="nav-brand">
+      <a routerLink="/admin" class="brand-link">
+        <div class="brand-icon">
+          <i class="fas fa-cogs"></i>
+        </div>
+        <span class="brand-text">Administration</span>
+      </a>
+    </div>
+
+    <!-- Menu utilisateur -->
+    <div class="user-menu">
+      <button class="user-btn" (click)="toggleDropdown()">
+        <div class="user-avatar">
+          {{ getUserInitials() }}
+        </div>
+        <div class="user-info">
+          <span class="user-name">{{ currentUser?.prenom }} {{ currentUser?.nom }}</span>
+          <span class="user-role">Administrateur</span>
+        </div>
+        <i class="fas fa-chevron-down" [class.rotate]="isDropdownOpen"></i>
+      </button>
+
+      <!-- Dropdown menu -->
+      <div class="dropdown-menu" [class.show]="isDropdownOpen" (click)="$event.stopPropagation()">
+        <div class="dropdown-header">
+          <div class="dropdown-avatar">
+            {{ getUserInitials() }}
+          </div>
+          <div class="dropdown-user-info">
+            <strong>{{ currentUser?.prenom }} {{ currentUser?.nom }}</strong>
+            <span class="user-email">{{ currentUser?.email }}</span>
+          </div>
+        </div>
+
+        <div class="dropdown-divider"></div>
+
+        <a routerLink="/admin/profile" class="dropdown-item" (click)="closeDropdown()">
+          <i class="fas fa-user-cog"></i>
+          <span>Mon profil</span>
+        </a>
+
+        <a routerLink="/admin/settings" class="dropdown-item" (click)="closeDropdown()">
+          <i class="fas fa-sliders-h"></i>
+          <span>Paramètres</span>
+        </a>
+
+        <div class="dropdown-divider"></div>
+
+        <button class="dropdown-item logout" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Déconnexion</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay pour fermer le dropdown -->
+  <div class="dropdown-overlay" 
+       *ngIf="isDropdownOpen" 
+       (click)="closeDropdown()"></div>
+</nav>

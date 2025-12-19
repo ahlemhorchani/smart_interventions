@@ -1,0 +1,253 @@
+<div class="signalement-form-page">
+  <!-- En-tête -->
+  <div class="form-header">
+    <div class="header-content">
+      <h1>
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ isEditMode ? 'Modifier le signalement' : 'Nouveau signalement' }}
+      </h1>
+      <p>Signalez un problème dans votre ville pour une intervention rapide</p>
+    </div>
+    
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="cancel()">
+        <i class="fas fa-times"></i> Annuler
+      </button>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="form-container">
+    <!-- Messages d'état -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+    </div>
+    
+    <div *ngIf="successMessage" class="alert alert-success">
+      <i class="fas fa-check-circle"></i> {{ successMessage }}
+    </div>
+    
+    <!-- Indicateur de chargement - Overlay -->
+    <div *ngIf="loading" class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Traitement en cours...</p>
+    </div>
+
+    <!-- ✅ SOLUTION: Enlevez *ngIf="!loading" du form -->
+    <form [formGroup]="signalementForm" (ngSubmit)="onSubmit()">
+      <!-- Section 1: Informations de base -->
+      <div class="form-section">
+        <h2><i class="fas fa-info-circle"></i> Informations du signalement</h2>
+        
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="titre">Titre du signalement *</label>
+            <input 
+              type="text" 
+              id="titre" 
+              formControlName="titre" 
+              placeholder="Ex: Nid-de-poule rue principale"
+              [class.is-invalid]="submitted && f['titre'].invalid"
+              [disabled]="loading">
+            <div *ngIf="submitted && f['titre'].errors" class="error-message">
+              <span *ngIf="f['titre'].errors['required']">Le titre est requis</span>
+              <span *ngIf="f['titre'].errors['minlength']">Minimum 5 caractères</span>
+              <span *ngIf="f['titre'].errors['maxlength']">Maximum 100 caractères</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="description">Description détaillée *</label>
+            <textarea 
+              id="description" 
+              formControlName="description" 
+              rows="4"
+              placeholder="Décrivez le problème en détail..."
+              [class.is-invalid]="submitted && f['description'].invalid"
+              [disabled]="loading"></textarea>
+            <div class="char-count">{{ f['description'].value?.length || 0 }}/500</div>
+            <div *ngIf="submitted && f['description'].errors" class="error-message">
+              <span *ngIf="f['description'].errors['required']">La description est requise</span>
+              <span *ngIf="f['description'].errors['minlength']">Minimum 10 caractères</span>
+              <span *ngIf="f['description'].errors['maxlength']">Maximum 500 caractères</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="type">Type de problème *</label>
+            <select 
+              id="type" 
+              formControlName="type"
+              [class.is-invalid]="submitted && f['type'].invalid"
+              [disabled]="loading">
+              <option value="">Sélectionnez un type</option>
+              <option *ngFor="let type of typesSignalement" [value]="type.value">
+                {{type.label}}
+              </option>
+            </select>
+            <div *ngIf="submitted && f['type'].errors" class="error-message">
+              Le type de problème est requis
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="urgence">Niveau d'urgence *</label>
+            <select 
+              id="urgence" 
+              formControlName="urgence"
+              [class.is-invalid]="submitted && f['urgence'].invalid"
+              [disabled]="loading">
+              <option *ngFor="let urgence of urgences" [value]="urgence.value">
+                {{urgence.label}}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Localisation -->
+      <div class="form-section">
+        <h2><i class="fas fa-map-marker-alt"></i> Localisation</h2>
+        
+        <div *ngIf="locationFromMap" class="location-source">
+          <i class="fas fa-check-circle text-success"></i>
+          Localisation importée depuis la carte
+        </div>
+        
+        <div class="form-group full-width">
+          <label for="localisation">Localisation exacte *</label>
+          <input 
+            type="text" 
+            id="localisation" 
+            formControlName="localisation" 
+            placeholder="Adresse exacte du problème"
+            [class.is-invalid]="submitted && f['localisation'].invalid"
+            [disabled]="loading">
+          <div *ngIf="submitted && f['localisation'].errors" class="error-message">
+            La localisation est requise
+          </div>
+        </div>
+        
+        <div class="location-actions">
+          <button type="button" class="btn btn-outline" (click)="useCurrentLocation()" [disabled]="loading">
+            <i class="fas fa-location-arrow"></i> Utiliser ma position
+          </button>
+          <button type="button" class="btn btn-outline" (click)="selectOnMap()" [disabled]="loading">
+            <i class="fas fa-map"></i> Sélectionner sur la carte
+          </button>
+        </div>
+        
+        <div class="form-row" *ngIf="f['coordonnees'].value">
+          <div class="form-group">
+            <label>Coordonnées GPS</label>
+            <div class="coordinate-display">
+              <i class="fas fa-globe"></i> {{ f['coordonnees'].value }}
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Adresse</label>
+            <div class="address-display">
+              <i class="fas fa-home"></i> {{ f['adresse'].value || 'Non spécifiée' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Photo -->
+      <div class="form-section">
+        <h2><i class="fas fa-camera"></i> Photo (optionnelle)</h2>
+        <p class="section-description">Une photo aide à mieux comprendre le problème</p>
+        
+        <div class="photo-upload">
+          <div *ngIf="!previewUrl" class="upload-area" (click)="!loading && fileInput.click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Cliquez pour ajouter une photo</p>
+            <small>JPEG, PNG, GIF - Max 5MB</small>
+            <input 
+              #fileInput
+              type="file" 
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              [disabled]="loading"
+              hidden>
+          </div>
+          
+          <div *ngIf="previewUrl" class="photo-preview">
+            <img [src]="previewUrl" alt="Photo du signalement">
+            <button type="button" class="remove-photo" (click)="removePhoto()" [disabled]="loading">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Contact -->
+      <div class="form-section">
+        <h2><i class="fas fa-user"></i> Informations de contact</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contactNom">Nom *</label>
+            <input 
+              type="text" 
+              id="contactNom" 
+              formControlName="contactNom" 
+              placeholder="Votre nom"
+              [class.is-invalid]="submitted && f['contactNom'].invalid"
+              [disabled]="loading">
+            <div *ngIf="submitted && f['contactNom'].errors" class="error-message">
+              Le nom est requis
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="contactTelephone">Téléphone</label>
+            <input 
+              type="tel" 
+              id="contactTelephone" 
+              formControlName="contactTelephone" 
+              placeholder="Ex: 12345678"
+              [class.is-invalid]="submitted && f['contactTelephone'].invalid"
+              [disabled]="loading">
+            <div *ngIf="submitted && f['contactTelephone'].errors" class="error-message">
+              Numéro invalide (8 chiffres)
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group full-width">
+          <label for="contactEmail">Email *</label>
+          <input 
+            type="email" 
+            id="contactEmail" 
+            formControlName="contactEmail" 
+            placeholder="votre@email.com"
+            [class.is-invalid]="submitted && f['contactEmail'].invalid"
+            [disabled]="loading">
+          <div *ngIf="submitted && f['contactEmail'].errors" class="error-message">
+            <span *ngIf="f['contactEmail'].errors['required']">L'email est requis</span>
+            <span *ngIf="f['contactEmail'].errors['email']">Email invalide</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutons de soumission -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="loading">
+          <i class="fas fa-times"></i> Annuler
+        </button>
+        
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          <i class="fas fa-paper-plane" *ngIf="!loading"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
+          {{ loading ? 'Envoi en cours...' : (isEditMode ? 'Mettre à jour' : 'Envoyer le signalement') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

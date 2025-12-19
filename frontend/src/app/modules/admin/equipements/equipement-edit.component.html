@@ -1,0 +1,89 @@
+<app-admin-navbar></app-admin-navbar>
+<div class="edit-equipement-container">
+  <h2>Modifier l'équipement</h2>
+
+  <div *ngIf="isFetching" class="loading">
+    Chargement de l'équipement...
+  </div>
+
+  <form *ngIf="!isFetching" (ngSubmit)="onSubmit()" #equipementForm="ngForm">
+    <div class="form-group">
+      <label for="type">Type d'équipement *</label>
+      <input
+        type="text"
+        id="type"
+        name="type"
+        [(ngModel)]="equipement.type"
+        required
+        class="form-control"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="adresse">Adresse *</label>
+      <input
+        type="text"
+        id="adresse"
+        name="adresse"
+        [(ngModel)]="equipement.adresse"
+        required
+        class="form-control"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="etat">État *</label>
+      <select
+        id="etat"
+        name="etat"
+        [(ngModel)]="equipement.etat"
+        required
+        class="form-control"
+      >
+        <option value="FONCTIONNEL">Fonctionnel</option>
+        <option value="DEFECTUEUX">Défectueux</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Coordonnées géographiques</label>
+      <div class="coordinates-group">
+        <div>
+          <label for="longitude">Longitude</label>
+          <input
+            type="number"
+            id="longitude"
+            name="longitude"
+            [(ngModel)]="equipement.localisation.coordinates[0]"
+            step="any"
+            class="form-control"
+          >
+        </div>
+        <div>
+          <label for="latitude">Latitude</label>
+          <input
+            type="number"
+            id="latitude"
+            name="latitude"
+            [(ngModel)]="equipement.localisation.coordinates[1]"
+            step="any"
+            class="form-control"
+          >
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <div class="form-actions">
+      <button type="button" (click)="onCancel()" class="btn btn-secondary">
+        Annuler
+      </button>
+      <button type="submit" [disabled]="isLoading" class="btn btn-primary">
+        {{ isLoading ? 'Mise à jour en cours...' : 'Mettre à jour' }}
+      </button>
+    </div>
+  </form>
+</div>

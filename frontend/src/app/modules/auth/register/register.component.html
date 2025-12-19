@@ -1,0 +1,186 @@
+<div class="auth-container">
+  <div class="auth-card glass-card">
+    <div class="auth-header">
+      <div class="auth-logo">
+        <div class="logo-icon">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <h2>Inscription</h2>
+      </div>
+      <p class="auth-subtitle">Créez votre compte Technicien ou Administrateur</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+      <!-- Prénom -->
+      <div class="form-group">
+        <label for="prenom">
+          <i class="fas fa-user"></i> Prénom
+        </label>
+        <input 
+          id="prenom"
+          type="text" 
+          formControlName="prenom" 
+          placeholder="Votre prénom"
+          [class.invalid]="form.controls.prenom.invalid && form.controls.prenom.touched">
+        <div class="error-message" *ngIf="form.controls.prenom.invalid && form.controls.prenom.touched">
+          <span *ngIf="form.controls.prenom.errors?.['required']">Le prénom est requis</span>
+        </div>
+      </div>
+
+      <!-- Nom -->
+      <div class="form-group">
+        <label for="nom">
+          <i class="fas fa-user"></i> Nom
+        </label>
+        <input 
+          id="nom"
+          type="text" 
+          formControlName="nom" 
+          placeholder="Votre nom"
+          [class.invalid]="form.controls.nom.invalid && form.controls.nom.touched">
+        <div class="error-message" *ngIf="form.controls.nom.invalid && form.controls.nom.touched">
+          <span *ngIf="form.controls.nom.errors?.['required']">Le nom est requis</span>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">
+          <i class="fas fa-envelope"></i> Email
+        </label>
+        <input 
+          id="email"
+          type="email" 
+          formControlName="email" 
+          placeholder="votre@email.com"
+          [class.invalid]="form.controls.email.invalid && form.controls.email.touched">
+        <div class="error-message" *ngIf="form.controls.email.invalid && form.controls.email.touched">
+          <span *ngIf="form.controls.email.errors?.['required']">L'email est requis</span>
+          <span *ngIf="form.controls.email.errors?.['email']">Format d'email invalide</span>
+        </div>
+      </div>
+
+      <!-- Mot de passe -->
+      <div class="form-group">
+        <label for="password">
+          <i class="fas fa-lock"></i> Mot de passe
+        </label>
+        <div class="password-input">
+          <input 
+            id="password"
+            [type]="showPassword ? 'text' : 'password'" 
+            formControlName="motDePasse" 
+            placeholder="Minimum 6 caractères"
+            [class.invalid]="form.controls.motDePasse.invalid && form.controls.motDePasse.touched">
+          <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
+            <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="form.controls.motDePasse.invalid && form.controls.motDePasse.touched">
+          <span *ngIf="form.controls.motDePasse.errors?.['required']">Le mot de passe est requis</span>
+          <span *ngIf="form.controls.motDePasse.errors?.['minlength']">Minimum 6 caractères</span>
+        </div>
+        
+        <!-- Indicateur de force du mot de passe (optionnel) -->
+        <div class="password-strength" *ngIf="form.controls.motDePasse.value">
+          <div class="strength-bar">
+            <div class="strength-fill" [class]="getPasswordStrength()"></div>
+          </div>
+          <span class="strength-text">{{ getPasswordStrengthText() }}</span>
+        </div>
+      </div>
+
+      <!-- Rôle -->
+      <div class="form-group">
+        <label for="role">
+          <i class="fas fa-user-tag"></i> Rôle
+        </label>
+        <select 
+          id="role" 
+          formControlName="role" 
+          class="form-select"
+          [class.invalid]="form.controls.role.invalid && form.controls.role.touched">
+          <option value="TECHNICIEN">Technicien</option>
+          <option value="ADMIN">Administrateur</option>
+        </select>
+      </div>
+
+      <!-- Conditions d'utilisation -->
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            [checked]="termsAccepted"
+            (change)="toggleTerms($event)"
+            class="checkbox-input">
+          <span class="checkbox-custom"></span>
+          <span class="checkbox-text">
+            J'accepte les <a href="#" class="auth-link">conditions d'utilisation</a> 
+            et la <a href="#" class="auth-link">politique de confidentialité</a>
+          </span>
+        </label>
+        <div class="error-message" *ngIf="!termsAccepted && form.controls.role.touched">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>Vous devez accepter les conditions</span>
+        </div>
+      </div>
+
+      <!-- Bouton d'inscription -->
+      <button 
+        type="submit" 
+        class="btn btn-primary btn-block auth-button"
+        [disabled]="form.invalid || !termsAccepted || isLoading">
+        <span *ngIf="!isLoading">
+          <i class="fas fa-user-plus"></i> S'inscrire
+        </span>
+        <span *ngIf="isLoading" class="loading">
+          <i class="fas fa-spinner fa-spin"></i> Inscription...
+        </span>
+      </button>
+
+      <div class="auth-divider">
+        <span>Ou</span>
+      </div>
+
+      <button type="button" class="btn btn-outline btn-block" routerLink="/auth/login">
+        <i class="fas fa-sign-in-alt"></i> Déjà un compte ? Se connecter
+      </button>
+
+      <div class="auth-links">
+        <a routerLink="/" class="back-home">
+          <i class="fas fa-home"></i> Retour à l'accueil
+        </a>
+      </div>
+    </form>
+
+    <!-- Messages -->
+    <div *ngIf="message" class="global-message" [class.success]="isSuccess" [class.error]="!isSuccess">
+      <i class="fas" [class.fa-check-circle]="isSuccess" [class.fa-exclamation-triangle]="!isSuccess"></i>
+      <span>{{ message }}</span>
+    </div>
+  </div>
+
+  <div class="auth-features">
+    <div class="feature">
+      <div class="feature-icon">
+        <i class="fas fa-tools"></i>
+      </div>
+      <h3>Gestion technique</h3>
+      <p>Gérez les interventions sur le terrain</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <i class="fas fa-tachometer-alt"></i>
+      </div>
+      <h3>Tableau de bord</h3>
+      <p>Suivez vos performances en temps réel</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <h3>Sécurisé</h3>
+      <p>Vos données sont protégées</p>
+    </div>
+  </div>
+</div>

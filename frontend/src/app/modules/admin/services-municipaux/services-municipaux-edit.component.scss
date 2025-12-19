@@ -1,0 +1,726 @@
+// ============================================
+// SERVICES MUNICIPAUX EDIT STYLES
+// ============================================
+$primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$secondary: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+$accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+$warning: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+$dark: #1a1a2e;
+$light: #f8f9ff;
+$success: #00b894;
+$danger: #ff7675;
+$primary-color: #667eea;
+
+$shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-md: 0 10px 25px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.15);
+$shadow-xl: 0 25px 60px rgba(0, 0, 0, 0.2);
+
+$radius-sm: 12px;
+$radius-md: 20px;
+$radius-lg: 30px;
+$radius-xl: 40px;
+
+$transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+$transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: $shadow-md;
+}
+
+@mixin gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+// ============================================
+// CONTAINER PRINCIPAL
+// ============================================
+.edit-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #667eea, transparent);
+  }
+}
+
+// ============================================
+// EN-TÊTE
+// ============================================
+.edit-header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  padding: 40px 30px;
+  border-radius: 0 0 $radius-xl $radius-xl;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M37.5 37.5C49.1 25.9 66.9 25.9 78.5 37.5l84.9 84.9c11.6 11.6 11.6 29.4 0 41s-29.4 11.6-41 0L37.5 78.5C25.9 66.9 25.9 49.1 37.5 37.5zm0 125c-11.6-11.6-11.6-29.4 0-41l84.9-84.9c11.6-11.6 29.4-11.6 41 0s11.6 29.4 0 41L78.5 162.5c-11.6 11.6-29.4 11.6-41 0z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 12px 24px;
+  border-radius: $radius-sm;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: $transition;
+  margin-bottom: 30px;
+  text-decoration: none;
+  
+  i {
+    font-size: 16px;
+    transition: $transition-fast;
+  }
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-5px);
+    
+    i {
+      transform: translateX(-3px);
+    }
+  }
+}
+
+.edit-header h1 {
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  
+  i {
+    font-size: 2.5rem;
+    color: #667eea;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: $radius-md;
+  }
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+// ============================================
+// CONTENU PRINCIPAL
+// ============================================
+.edit-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 30px;
+  position: relative;
+  z-index: 1;
+}
+
+// ============================================
+// FORMULAIRE D'ÉDITION
+// ============================================
+.edit-form {
+  @include glass-effect;
+  border-radius: $radius-lg;
+  padding: 40px;
+  animation: slideInUp 0.8s ease-out;
+}
+
+.form-section {
+  margin-bottom: 40px;
+  
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    
+    i {
+      color: $primary-color;
+      font-size: 1.3rem;
+    }
+  }
+}
+
+.form-group {
+  margin-bottom: 30px;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  font-weight: 700;
+  color: #2d3748;
+  font-size: 16px;
+  
+  i {
+    color: $primary-color;
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+  }
+  
+  .required {
+    color: $danger;
+    margin-left: 5px;
+  }
+}
+
+.form-control {
+  width: 100%;
+  padding: 18px 25px;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: $radius-md;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  transition: $transition-fast;
+  font-family: inherit;
+  
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  &.is-invalid {
+    border-color: $danger;
+    
+    &:focus {
+      box-shadow: 0 0 0 4px rgba(255, 118, 117, 0.1);
+    }
+  }
+  
+  &.is-valid {
+    border-color: $success;
+    
+    &:focus {
+      box-shadow: 0 0 0 4px rgba(0, 184, 148, 0.1);
+    }
+  }
+  
+  &::placeholder {
+    color: #a0aec0;
+  }
+  
+  // Style spécifique pour textarea
+  &textarea {
+    resize: vertical;
+    min-height: 150px;
+    line-height: 1.6;
+  }
+}
+
+// ============================================
+// MESSAGES ET INDICATEURS
+// ============================================
+.char-count {
+  text-align: right;
+  font-size: 14px;
+  color: #a0aec0;
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  span {
+    font-weight: 700;
+    color: $primary-color;
+  }
+}
+
+.error-messages {
+  margin-top: 10px;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: $danger;
+  font-size: 14px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 118, 117, 0.05);
+  border-radius: $radius-sm;
+  border-left: 3px solid $danger;
+  
+  i {
+    font-size: 16px;
+  }
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: $success;
+  font-size: 14px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 184, 148, 0.05);
+  border-radius: $radius-sm;
+  border-left: 3px solid $success;
+  
+  i {
+    font-size: 16px;
+  }
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #718096;
+  font-size: 13px;
+  margin-top: 10px;
+  font-style: italic;
+  
+  i {
+    color: #f6b365;
+  }
+}
+
+// ============================================
+// ALERTES
+// ============================================
+.alert {
+  display: flex;
+  gap: 20px;
+  padding: 25px;
+  border-radius: $radius-md;
+  margin-bottom: 30px;
+  animation: slideInLeft 0.5s ease-out;
+  
+  i {
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  
+  div {
+    flex: 1;
+    
+    strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+  }
+  
+  &.success {
+    background: rgba(0, 184, 148, 0.1);
+    border-left: 4px solid $success;
+    
+    i {
+      color: $success;
+    }
+    
+    strong {
+      color: #155724;
+    }
+    
+    p {
+      color: #0c4128;
+    }
+  }
+  
+  &.error {
+    background: rgba(255, 118, 117, 0.1);
+    border-left: 4px solid $danger;
+    
+    i {
+      color: $danger;
+    }
+    
+    strong {
+      color: #721c24;
+    }
+    
+    p {
+      color: #491217;
+    }
+  }
+}
+
+// ============================================
+// ACTIONS DU FORMULAIRE
+// ============================================
+.form-actions {
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.btn {
+  padding: 18px 35px;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 700;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: $transition;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+  min-width: 200px;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s ease;
+  }
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-5px);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  i {
+    font-size: 18px;
+  }
+  
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+  }
+}
+
+.btn-primary {
+  background: $primary;
+  color: white;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  
+  &:hover:not(:disabled) {
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+  }
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+  color: white;
+  
+  &:hover:not(:disabled) {
+    box-shadow: 0 10px 30px rgba(113, 128, 150, 0.3);
+  }
+}
+
+.btn-danger {
+  background: $accent;
+  color: white;
+  
+  &:hover:not(:disabled) {
+    box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+  }
+}
+
+// ============================================
+// RÉSUMÉ DE VALIDATION
+// ============================================
+.validation-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  background: rgba(102, 126, 234, 0.05);
+  padding: 25px;
+  border-radius: $radius-md;
+  
+  .summary-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    border-radius: $radius-sm;
+    font-weight: 600;
+    transition: $transition-fast;
+    
+    i {
+      font-size: 18px;
+    }
+    
+    &.valid {
+      background: rgba(0, 184, 148, 0.1);
+      color: $success;
+      border-left: 3px solid $success;
+      
+      i {
+        color: $success;
+      }
+    }
+    
+    &.invalid {
+      background: rgba(255, 118, 117, 0.1);
+      color: $danger;
+      border-left: 3px solid $danger;
+      
+      i {
+        color: $danger;
+      }
+    }
+    
+    &:not(.valid):not(.invalid) {
+      background: rgba(113, 128, 150, 0.1);
+      color: #718096;
+      border-left: 3px solid #718096;
+    }
+  }
+}
+
+// ============================================
+// ÉTAT DE CHARGEMENT
+// ============================================
+.loading-state {
+  @include glass-effect;
+  padding: 100px 40px;
+  text-align: center;
+  border-radius: $radius-lg;
+  margin-top: 40px;
+  animation: scaleIn 0.8s ease-out;
+  
+  .loading-spinner {
+    width: 80px;
+    height: 80px;
+    border: 6px solid rgba(102, 126, 234, 0.2);
+    border-radius: 50%;
+    border-top-color: #667eea;
+    animation: spin 1.5s linear infinite;
+    margin: 0 auto 30px;
+  }
+  
+  p {
+    color: #718096;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+}
+
+// ============================================
+// ANIMATIONS
+// ============================================
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+// ============================================
+// RESPONSIVE DESIGN
+// ============================================
+@media (max-width: 1200px) {
+  .edit-content {
+    padding: 30px 20px;
+  }
+  
+  .edit-form {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 992px) {
+  .edit-header {
+    padding: 30px 20px;
+  }
+  
+  .edit-header h1 {
+    font-size: 2.3rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .action-buttons {
+    flex-wrap: wrap;
+    
+    .btn {
+      flex: 1;
+      min-width: auto;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .edit-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .edit-form {
+    padding: 25px;
+  }
+  
+  .form-section h3 {
+    font-size: 1.3rem;
+  }
+  
+  .btn {
+    padding: 16px 25px;
+    font-size: 15px;
+    min-width: auto;
+  }
+  
+  .validation-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-container {
+    padding: 15px;
+  }
+  
+  .edit-header {
+    padding: 25px 15px;
+    border-radius: 0 0 $radius-lg $radius-lg;
+  }
+  
+  .edit-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .edit-content {
+    padding: 15px;
+  }
+  
+  .edit-form {
+    padding: 20px;
+  }
+  
+  .form-control {
+    padding: 14px 18px;
+    font-size: 15px;
+  }
+  
+  .action-buttons {
+    gap: 15px;
+  }
+  
+  .btn {
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,747 @@
+// ============================================
+// SERVICES MUNICIPAUX LIST STYLES
+// ============================================
+$primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$secondary: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+$accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+$warning: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+$dark: #1a1a2e;
+$light: #f8f9ff;
+$success: #00b894;
+$danger: #ff7675;
+$primary-color: #667eea;
+
+$shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-md: 0 10px 25px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.15);
+$shadow-xl: 0 25px 60px rgba(0, 0, 0, 0.2);
+
+$radius-sm: 12px;
+$radius-md: 20px;
+$radius-lg: 30px;
+$radius-xl: 40px;
+
+$transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+$transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: $shadow-md;
+}
+
+@mixin gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+// ============================================
+// CONTAINER PRINCIPAL
+// ============================================
+.services-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 30px;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #667eea, transparent);
+  }
+}
+
+// ============================================
+// EN-TÊTE
+// ============================================
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  animation: slideInLeft 0.8s ease-out;
+  
+  h2 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    background: $primary;
+    @include gradient-text;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100px;
+      height: 4px;
+      background: $primary;
+      border-radius: 2px;
+    }
+  }
+}
+
+.btn-add {
+  @include glass-effect;
+  padding: 18px 35px;
+  background: $secondary;
+  color: white;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: $transition;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: $shadow-lg;
+    
+    &::before {
+      left: 100%;
+    }
+    
+    i {
+      transform: rotate(90deg) scale(1.2);
+    }
+  }
+  
+  i {
+    font-size: 18px;
+    transition: $transition;
+  }
+}
+
+// ============================================
+// FILTRES ET RECHERCHE
+// ============================================
+.filters {
+  @include glass-effect;
+  padding: 25px;
+  border-radius: $radius-lg;
+  margin-bottom: 30px;
+  animation: slideInRight 0.8s ease-out 0.2s both;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  
+  i {
+    position: absolute;
+    left: 20px;
+    color: #a0aec0;
+    font-size: 18px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 18px 60px 18px 50px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: $radius-md;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    transition: $transition-fast;
+    
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    &::placeholder {
+      color: #a0aec0;
+    }
+  }
+  
+  .clear-search {
+    position: absolute;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: #a0aec0;
+    cursor: pointer;
+    font-size: 16px;
+    transition: $transition-fast;
+    
+    &:hover {
+      color: #f5576c;
+      transform: scale(1.2);
+    }
+  }
+}
+
+// ============================================
+// INDICATEUR DE FILTRES
+// ============================================
+.filter-info {
+  @include glass-effect;
+  padding: 15px 25px;
+  border-radius: $radius-md;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: slideInLeft 0.5s ease-out;
+  border-left: 4px solid $primary-color;
+  
+  i {
+    color: $primary-color;
+    margin-right: 10px;
+  }
+  
+  .clear-filter-btn {
+    background: transparent;
+    color: #f5576c;
+    border: 1px solid rgba(245, 87, 108, 0.3);
+    padding: 8px 15px;
+    border-radius: $radius-sm;
+    font-size: 14px;
+    cursor: pointer;
+    transition: $transition-fast;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    
+    &:hover {
+      background: rgba(245, 87, 108, 0.1);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// ============================================
+// GRILLE DES SERVICES
+// ============================================
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+  animation: scaleIn 0.8s ease-out 0.4s both;
+}
+
+.service-card {
+  @include glass-effect;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: $transition;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: $shadow-xl;
+    
+    .service-icon {
+      transform: rotate(15deg) scale(1.1);
+    }
+  }
+}
+
+.service-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 25px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), transparent);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.service-icon {
+  width: 60px;
+  height: 60px;
+  background: $primary;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  transition: $transition;
+  flex-shrink: 0;
+}
+
+.service-title {
+  flex: 1;
+  
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 5px;
+    line-height: 1.2;
+  }
+  
+  .service-date {
+    font-size: 12px;
+    color: #718096;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+.service-actions {
+  display: flex;
+  gap: 8px;
+  
+  .btn-action {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: $transition-fast;
+    
+    &.edit {
+      background: rgba(17, 153, 142, 0.1);
+      color: #11998e;
+      
+      &:hover {
+        background: rgba(17, 153, 142, 0.2);
+        transform: rotate(15deg);
+      }
+    }
+    
+    &.delete {
+      background: rgba(245, 87, 108, 0.1);
+      color: #f5576c;
+      
+      &:hover {
+        background: rgba(245, 87, 108, 0.2);
+        transform: rotate(15deg);
+      }
+    }
+  }
+}
+
+// ============================================
+// CORPS DE LA CARTE
+// ============================================
+.service-body {
+  padding: 25px;
+  flex: 1;
+}
+
+.service-description {
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.interventions-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+  padding: 20px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: $radius-md;
+  
+  .stat-item {
+    text-align: center;
+  }
+  
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: $primary-color;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+}
+
+// ============================================
+// LISTE DES INTERVENTIONS
+// ============================================
+.interventions-list {
+  margin-top: 25px;
+  
+  h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+  }
+}
+
+.intervention-item {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: $radius-sm;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-left: 4px solid transparent;
+  transition: $transition-fast;
+  
+  &:hover {
+    background: white;
+    transform: translateX(5px);
+  }
+  
+  &.en_attente {
+    border-left-color: #f6b365;
+  }
+  
+  &.en_cours {
+    border-left-color: #667eea;
+  }
+  
+  &.termine {
+    border-left-color: #00b894;
+  }
+}
+
+.intervention-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.intervention-title {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 14px;
+  flex: 1;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &.en_attente {
+    background: rgba(246, 179, 101, 0.2);
+    color: #f6b365;
+  }
+  
+  &.en_cours {
+    background: rgba(102, 126, 234, 0.2);
+    color: $primary-color;
+  }
+  
+  &.termine {
+    background: rgba(0, 184, 148, 0.2);
+    color: $success;
+  }
+}
+
+.intervention-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #718096;
+  
+  .urgence {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    
+    &.faible {
+      color: #00b894;
+    }
+    
+    &.moyenne {
+      color: #f6b365;
+    }
+    
+    &.elevee {
+      color: #f5576c;
+    }
+  }
+  
+  .date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+.no-interventions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: $radius-sm;
+  color: #718096;
+  font-size: 14px;
+  font-style: italic;
+  
+  i {
+    color: #a0aec0;
+  }
+}
+
+// ============================================
+// PIED DE CARTE
+// ============================================
+.service-footer {
+  display: flex;
+  gap: 15px;
+  padding: 25px;
+  background: rgba(249, 250, 251, 0.5);
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
+  
+  button {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: $radius-sm;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: $transition-fast;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    
+    &.btn-outline {
+      background: transparent;
+      color: $primary-color;
+      border: 2px solid rgba(102, 126, 234, 0.3);
+      
+      &:hover {
+        background: rgba(102, 126, 234, 0.1);
+        border-color: $primary-color;
+      }
+    }
+    
+    &.btn-primary {
+      background: $primary;
+      color: white;
+      border: none;
+      
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      }
+    }
+  }
+}
+
+// ============================================
+// ÉTATS DE CHARGEMENT ET VIDES
+// ============================================
+.loading-state {
+  @include glass-effect;
+  padding: 80px 40px;
+  text-align: center;
+  border-radius: $radius-lg;
+  margin-top: 40px;
+  animation: scaleIn 0.8s ease-out;
+  
+  .loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(102, 126, 234, 0.2);
+    border-radius: 50%;
+    border-top-color: #667eea;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+  
+  p {
+    color: #718096;
+    font-size: 1.1rem;
+  }
+}
+
+.no-data {
+  @include glass-effect;
+  padding: 80px 40px;
+  text-align: center;
+  border-radius: $radius-lg;
+  margin-top: 40px;
+  animation: scaleIn 0.8s ease-out;
+  
+  i {
+    font-size: 60px;
+    color: #a0aec0;
+    margin-bottom: 20px;
+  }
+  
+  h3 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #2d3748;
+  }
+  
+  p {
+    color: #718096;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+  }
+  
+  .btn-add {
+    margin: 0 auto;
+  }
+}
+
+// ============================================
+// ANIMATIONS
+// ============================================
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ============================================
+// RESPONSIVE DESIGN
+// ============================================
+@media (max-width: 1200px) {
+  .services-container {
+    padding: 30px 20px;
+  }
+  
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+    
+    h2 {
+      font-size: 2.3rem;
+    }
+    
+    .btn-add {
+      align-self: flex-start;
+    }
+  }
+  
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    h2 {
+      font-size: 1.8rem;
+      
+      &::after {
+        width: 70px;
+      }
+    }
+  }
+  
+  .btn-add {
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+  
+  .service-footer {
+    flex-direction: column;
+  }
+  
+  .interventions-stats {
+    grid-template-columns: repeat(3, 1fr);
+    
+    .stat-number {
+      font-size: 2rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .services-container {
+    padding: 20px 15px;
+  }
+  
+  .header {
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  .service-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .service-actions {
+    align-self: flex-end;
+  }
+}

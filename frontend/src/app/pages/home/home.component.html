@@ -1,0 +1,469 @@
+<!-- home.component.html - VERSION MODIFIÉE -->
+<div class="app-container">
+  <!-- Barre de navigation (CACHER pour les routes technicien/admin) -->
+<nav class="navbar" *ngIf="!isAdminRoute() && !isTechnicienRoute()">  <!-- ⭐ AJOUTER cette condition -->
+    <div class="nav-container">
+      <!-- Logo -->
+      <a routerLink="/" class="nav-brand" (click)="closeMobileMenu()">
+        <div class="logo">
+          <div class="logo-icon">
+            <i class="fas fa-city"></i>
+          </div>
+          <span class="logo-text">Smart Interventions</span>
+        </div>
+      </a>
+      
+      <!-- Navigation desktop -->
+      <div class="nav-links">
+        <a routerLink="/" 
+           class="nav-link" 
+           [class.active]="isActiveRoute('/')"
+           routerLinkActive="active">
+          <i class="fas fa-home"></i> Accueil
+        </a>
+        <a routerLink="/carte" 
+           class="nav-link"
+           routerLinkActive="active">
+          <i class="fas fa-map-marked-alt"></i> Carte Interactive
+        </a>
+        <a routerLink="/citoyen/signalement" 
+           class="nav-link"
+           routerLinkActive="active">
+          <i class="fas fa-exclamation-circle"></i> Signaler
+        </a>
+        
+        
+        <!-- Boutons d'authentification -->
+        <div class="auth-buttons">
+          <ng-container *ngIf="!isAuthenticated; else authenticatedMenu">
+            <a routerLink="/auth/login" class="btn btn-outline">
+              <i class="fas fa-sign-in-alt"></i> Connexion
+            </a>
+            <a routerLink="/auth/register" class="btn btn-primary">
+              <i class="fas fa-user-plus"></i> Inscription
+            </a>
+          </ng-container>
+          <ng-template #authenticatedMenu>
+            <!-- Menu utilisateur -->
+            <div class="user-menu">
+              <button class="user-btn" (click)="toggleUserMenu()">
+                <div class="user-avatar">
+                  {{ getUserInitials() }}
+                </div>
+                <span>{{ currentUser?.prenom || 'Mon compte' }}</span>
+                <i class="fas fa-chevron-down" [class.rotate-180]="showUserMenu"></i>
+              </button>
+              <div class="user-dropdown" [class.show]="showUserMenu">
+                <div class="user-info">
+                  <strong>{{ currentUser?.prenom }} {{ currentUser?.nom }}</strong>
+                  <div class="user-role-badge">{{ getUserRole() }}</div>
+                </div>
+                <div class="dropdown-divider"></div>
+                
+                <!-- Liens pour ADMIN -->
+                <a routerLink="/admin" 
+                   *ngIf="currentUser?.role === 'ADMIN'" 
+                   class="dropdown-item"
+                   (click)="toggleUserMenu()">
+                  <i class="fas fa-cogs"></i> Administration
+                </a>
+                
+                <!-- Liens pour TECHNICIEN -->
+                <a routerLink="/technicien" 
+                   *ngIf="currentUser?.role === 'TECHNICIEN'" 
+                   class="dropdown-item"
+                   (click)="toggleUserMenu()">
+                  <i class="fas fa-tachometer-alt"></i> Tableau de bord
+                </a>
+                
+                <a routerLink="/technicien/interventions" 
+                   *ngIf="currentUser?.role === 'TECHNICIEN'" 
+                   class="dropdown-item"
+                   (click)="toggleUserMenu()">
+                  <i class="fas fa-list-check"></i> Mes interventions
+                </a>
+                
+                <a routerLink="/technicien/calendar" 
+                   *ngIf="currentUser?.role === 'TECHNICIEN'" 
+                   class="dropdown-item"
+                   (click)="toggleUserMenu()">
+                  <i class="fas fa-calendar-days"></i> Calendrier
+                </a>
+                
+                <a routerLink="/technicien/reports" 
+                   *ngIf="currentUser?.role === 'TECHNICIEN'" 
+                   class="dropdown-item"
+                   (click)="toggleUserMenu()">
+                  <i class="fas fa-chart-bar"></i> Rapports
+                </a>
+                
+                <!-- Liens pour tous les utilisateurs -->
+                <a routerLink="/citoyen/suivi" 
+                   class="dropdown-item"
+                   (click)="toggleUserMenu()">
+                  <i class="fas fa-history"></i> Mes signalements
+                </a>
+                
+                <a routerLink="/profile" 
+                   class="dropdown-item"
+                   (click)="toggleUserMenu()">
+                  <i class="fas fa-user-cog"></i> Mon profil
+                </a>
+                
+                <div class="dropdown-divider"></div>
+                
+                <button class="dropdown-item logout" (click)="logout()">
+                  <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+      
+      <!-- Bouton menu mobile -->
+      <button class="nav-toggle" (click)="toggleMobileMenu()">
+        <i class="fas" [class.fa-bars]="!showMobileMenu" [class.fa-times]="showMobileMenu"></i>
+      </button>
+    </div>
+    
+    <!-- Overlay menu mobile -->
+    <div class="mobile-menu-overlay" 
+         [class.show]="showMobileMenu"
+         (click)="closeMobileMenu()"></div>
+    
+    <!-- Menu mobile -->
+    <div class="mobile-menu" [class.show]="showMobileMenu">
+      <ng-container *ngIf="isAuthenticated">
+        <div class="mobile-user-info">
+          <div class="mobile-user-avatar">
+            {{ getUserInitials() }}
+          </div>
+          <strong>{{ currentUser?.prenom }} {{ currentUser?.nom }}</strong>
+          <div class="user-role-badge">{{ getUserRole() }}</div>
+        </div>
+      </ng-container>
+      
+      <div class="mobile-links">
+        <a routerLink="/" 
+           class="mobile-link" 
+           [class.active]="isActiveRoute('/')"
+           (click)="closeMobileMenu()">
+          <i class="fas fa-home"></i> Accueil
+        </a>
+        <a routerLink="/carte" 
+           class="mobile-link"
+           (click)="closeMobileMenu()">
+          <i class="fas fa-map-marked-alt"></i> Carte Interactive
+        </a>
+        <a routerLink="/citoyen/signalement" 
+           class="mobile-link"
+           (click)="closeMobileMenu()">
+          <i class="fas fa-exclamation-circle"></i> Signaler un problème
+        </a>
+        <a routerLink="/citoyen/suivi" 
+           class="mobile-link"
+           (click)="closeMobileMenu()">
+          <i class="fas fa-search"></i> Suivi des signalements
+        </a>
+        
+        <div class="dropdown-divider"></div>
+        
+        <ng-container *ngIf="isAuthenticated">
+          <a routerLink="/admin" 
+             *ngIf="currentUser?.role === 'ADMIN'" 
+             class="mobile-link"
+             (click)="closeMobileMenu()">
+            <i class="fas fa-cogs"></i> Administration
+          </a>
+          
+          <!-- Liens pour TECHNICIEN dans le menu mobile -->
+          <a routerLink="/technicien" 
+             *ngIf="currentUser?.role === 'TECHNICIEN'" 
+             class="mobile-link"
+             (click)="closeMobileMenu()">
+            <i class="fas fa-tachometer-alt"></i> Tableau de bord
+          </a>
+          
+          <a routerLink="/technicien/interventions" 
+             *ngIf="currentUser?.role === 'TECHNICIEN'" 
+             class="mobile-link"
+             (click)="closeMobileMenu()">
+            <i class="fas fa-list-check"></i> Mes interventions
+          </a>
+          
+          <a routerLink="/technicien/calendar" 
+             *ngIf="currentUser?.role === 'TECHNICIEN'" 
+             class="mobile-link"
+             (click)="closeMobileMenu()">
+            <i class="fas fa-calendar-days"></i> Calendrier
+          </a>
+          
+          <a routerLink="/technicien/reports" 
+             *ngIf="currentUser?.role === 'TECHNICIEN'" 
+             class="mobile-link"
+             (click)="closeMobileMenu()">
+            <i class="fas fa-chart-bar"></i> Rapports
+          </a>
+          
+          <a routerLink="/profile" 
+             class="mobile-link"
+             (click)="closeMobileMenu()">
+            <i class="fas fa-user-cog"></i> Mon profil
+          </a>
+        </ng-container>
+      </div>
+      
+      <div class="mobile-auth">
+        <ng-container *ngIf="!isAuthenticated">
+          <a routerLink="/auth/login" 
+             class="btn btn-outline btn-block" 
+             (click)="closeMobileMenu()">
+            <i class="fas fa-sign-in-alt"></i> Connexion
+          </a>
+          <a routerLink="/auth/register" 
+             class="btn btn-primary btn-block" 
+             (click)="closeMobileMenu()">
+            <i class="fas fa-user-plus"></i> Inscription
+          </a>
+        </ng-container>
+        <ng-container *ngIf="isAuthenticated">
+          <button class="btn btn-outline btn-block logout" 
+                  (click)="logout(); closeMobileMenu()">
+            <i class="fas fa-sign-out-alt"></i> Déconnexion
+          </button>
+        </ng-container>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenu conditionnel -->
+  <ng-container *ngIf="isHomeRoute() && !isTechnicienRoute(); else childContent"> <!-- ⭐ MODIFIER cette condition -->
+    <!-- Hero Section (UNIQUEMENT pour la page d'accueil) -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          Transformez votre ville avec Smart Interventions
+        </h1>
+        <p class="hero-subtitle">
+          Plateforme intelligente de signalement et gestion des interventions urbaines.
+          Contribuez à l'amélioration de votre cadre de vie en quelques clics.
+        </p>
+        
+        <div class="cta-buttons">
+          <a routerLink="/citoyen/signalement" class="btn btn-success btn-lg">
+            <i class="fas fa-plus-circle"></i> Faire un signalement
+          </a>
+          <a routerLink="/carte" class="btn btn-primary btn-lg">
+            <i class="fas fa-map"></i> Voir la carte
+          </a>
+        </div>
+        
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ stats.totalInterventions | number }}</div>
+            <div class="stat-label">Interventions totales</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ stats.interventionsToday }}</div>
+            <div class="stat-label">Aujourd'hui</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ stats.resolvedToday }}</div>
+            <div class="stat-label">Résolues aujourd'hui</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ stats.satisfactionRate }}%</div>
+            <div class="stat-label">Satisfaction</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="container">
+        <h2 class="section-title">Pourquoi choisir Smart Interventions ?</h2>
+        <p class="section-subtitle">
+          Une solution complète pour une ville plus intelligente et plus réactive
+        </p>
+        
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <h3 class="feature-title">Signalement rapide</h3>
+            <p class="feature-description">
+              Signalez un problème en moins de 2 minutes grâce à notre interface intuitive
+              et géolocalisation automatique.
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <h3 class="feature-title">Carte interactive</h3>
+            <p class="feature-description">
+              Visualisez en temps réel toutes les interventions en cours dans votre ville
+              sur notre carte interactive.
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="feature-title">Suivi en direct</h3>
+            <p class="feature-description">
+              Suivez l'avancement de vos signalements avec des mises à jour en temps réel
+              et des notifications.
+            </p>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-users-cog"></i>
+            </div>
+            <h3 class="feature-title">Collaboration</h3>
+            <p class="feature-description">
+              Plateforme collaborative où citoyens, techniciens et administrations
+              travaillent ensemble pour améliorer la ville.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2 class="cta-title">Prêt à contribuer ?</h2>
+        <p>
+          Rejoignez des milliers de citoyens qui ont déjà contribué à l'amélioration
+          de leur cadre de vie. Ensemble, rendons notre ville plus agréable à vivre.
+        </p>
+        
+        <div class="cta-buttons">
+          <a routerLink="/citoyen/signalement" class="btn btn-success btn-lg">
+            <i class="fas fa-bullhorn"></i> Commencer maintenant
+          </a>
+          <a routerLink="/auth/register" class="btn btn-outline btn-lg">
+            <i class="fas fa-user-plus"></i> Créer un compte
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pied de page amélioré -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <div class="footer-logo">
+            <i class="fas fa-city footer-logo-icon"></i>
+            <h3>Smart Interventions</h3>
+          </div>
+          <p>
+            <i class="fas fa-info-circle"></i>
+            Plateforme intelligente de gestion des interventions urbaines
+          </p>
+          <div class="social-links">
+            <a href="#" class="social-link" aria-label="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Navigation</h4>
+          <ul>
+            <li>
+              <a routerLink="/">
+                <i class="fas fa-chevron-right"></i> Accueil
+              </a>
+            </li>
+            <li>
+              <a routerLink="/carte">
+                <i class="fas fa-chevron-right"></i> Carte interactive
+              </a>
+            </li>
+            <li>
+              <a routerLink="/citoyen/signalement">
+                <i class="fas fa-chevron-right"></i> Faire un signalement
+              </a>
+            </li>
+            <li>
+              <a routerLink="/citoyen/suivi">
+                <i class="fas fa-chevron-right"></i> Suivre un signalement
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Services</h4>
+          <ul>
+            <li>
+              <a href="#">
+                <i class="fas fa-road"></i> Service de voirie
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <i class="fas fa-lightbulb"></i> Service d'éclairage
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <i class="fas fa-trash-alt"></i> Service de propreté
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <i class="fas fa-tree"></i> Espaces verts
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Contact</h4>
+          <p><i class="fas fa-phone"></i> 71 123 456</p>
+          <p><i class="fas fa-envelope"></i> contact@smartinterventions.tn</p>
+          <p><i class="fas fa-map-marker-alt"></i> Municipalité, Tunis 1000</p>
+          <p><i class="fas fa-clock"></i> Lun-Ven: 8h-18h</p>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Smart Interventions. Tous droits réservés.</p>
+        <p style="font-size: 0.9rem; margin-top: 8px; opacity: 0.8;">
+          <a routerLink="/privacy" style="color: inherit; text-decoration: none;">
+            Politique de confidentialité
+          </a> 
+          | 
+          <a routerLink="/terms" style="color: inherit; text-decoration: none;">
+            Conditions d'utilisation
+          </a>
+        </p>
+      </div>
+    </footer>
+  </ng-container>
+
+  <!-- Template pour afficher le contenu des routes enfants -->
+  <ng-template #childContent>
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </ng-template>
+</div>

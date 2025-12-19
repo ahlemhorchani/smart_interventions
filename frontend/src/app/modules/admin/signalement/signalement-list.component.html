@@ -1,0 +1,204 @@
+<app-admin-navbar></app-admin-navbar>
+<div class="signalement-container">
+  <h2><i class="fas fa-bullhorn"></i> Liste des Signalements</h2>
+
+  <div class="filters">
+    <label>Filtrer par statut :</label>
+    <select [(ngModel)]="selectedStatut" (change)="filterByStatut()">
+      <option value="ALL">Tous les statuts</option>
+      <option value="RECU">Reçu</option>
+      <option value="EN_TRAITEMENT">En traitement</option>
+      <option value="RESOLU">Résolu</option>
+    </select>
+    <span class="badge badge-secondary">
+      {{ filteredSignalements.length }} signalement(s)
+    </span>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <i class="fas fa-spinner fa-spin"></i> Chargement des signalements...
+  </div>
+
+  <div *ngIf="!loading && filteredSignalements.length" class="signalements-grid">
+    <div *ngFor="let s of filteredSignalements; let i = index" 
+         class="signalement-card" 
+         [attr.data-index]="i">
+      
+      <!-- En-tête avec titre et photo -->
+      <div class="signalement-header">
+        <div class="signalement-title">
+          <h3>{{ s.titre }}</h3>
+          <div class="signalement-meta">
+            <span class="badge type-badge" [ngClass]="'type-' + s.type.toLowerCase()">
+              <i class="fas fa-tag"></i> {{ getTypeLabel(s.type) }}
+            </span>
+            <span class="badge" [ngClass]="getUrgenceClass(s.urgence)">
+              <i class="fas fa-exclamation-triangle"></i> {{ getUrgenceLabel(s.urgence) }}
+            </span>
+            <span class="status" [class.resolu]="s.statut === 'RESOLU'">
+              <i class="fas fa-circle" [style.font-size]="'8px'"></i> {{ getStatutLabel(s.statut) }}
+            </span>
+          </div>
+        </div>
+        
+        <!-- Photo du signalement -->
+        <div class="signalement-photo" *ngIf="s.photo">
+          <img [src]="getPhotoUrl(s.photo)" 
+               [alt]="s.titre"
+               (click)="viewPhoto(s)"
+               class="clickable-photo"
+               loading="lazy">
+          <div class="photo-overlay" (click)="viewPhoto(s)">
+            <i class="fas fa-search-plus"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenu principal -->
+      <div class="signalement-content">
+        <p class="description">{{ s.description }}</p>
+        
+        <div class="signalement-details">
+          <div class="detail-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <strong>Adresse:</strong>
+              <p>{{ s.adresse }}</p>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="s.localisation && s.localisation !== s.adresse">
+            <i class="fas fa-location-dot"></i>
+            <div>
+              <strong>Localisation précise:</strong>
+              <p>{{ s.localisation }}</p>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="s.coordonnees">
+            <i class="fas fa-globe"></i>
+            <div>
+              <strong>Coordonnées GPS:</strong>
+              <p>{{ s.coordonnees }}</p>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <i class="fas fa-calendar-alt"></i>
+            <div>
+              <strong>Date de signalement:</strong>
+              <p>{{ s.dateCreation | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <i class="fas fa-user-circle"></i>
+            <div>
+              <strong>Signalé par:</strong>
+              <p>{{ s.contactNom }}</p>
+              <div class="contact-info">
+                <span>
+                  <i class="fas fa-envelope"></i> {{ s.contactEmail }}
+                </span>
+                <span *ngIf="s.contactTelephone">
+                  <i class="fas fa-phone-alt"></i> {{ s.contactTelephone }}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="s.interventionId">
+            <i class="fas fa-tools"></i>
+            <div>
+              <strong>Intervention liée:</strong>
+              <p>ID: {{ s.interventionId }}</p>
+              <button class="btn-view-intervention" 
+                      (click)="viewIntervention(s.interventionId!)">
+                <i class="fas fa-external-link-alt"></i> Voir l'intervention
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Historique -->
+        <div class="signalement-history" *ngIf="s.historique && s.historique.length > 0">
+          <h4><i class="fas fa-history"></i> Historique des modifications</h4>
+          <div class="history-items">
+            <div *ngFor="let hist of s.historique" class="history-item">
+              <div class="history-date">{{ hist.date | date:'dd/MM HH:mm' }}</div>
+              <div class="history-action">{{ hist.action }}</div>
+              <div class="history-responsable">{{ hist.responsable }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <!-- REPLACEZ TOUTE LA SECTION DES ACTIONS AVEC CE CODE -->
+<div class="signalement-actions">
+  <!-- Bouton Créer Intervention avec gestion d'erreur -->
+  <button 
+    class="btn-create-intervention"
+    (click)="createInterventionFromSignalement(s); $event.stopPropagation()"
+    [disabled]="s.statut === 'RESOLU' || s.interventionId"
+    [attr.aria-label]="'Créer une intervention pour ' + s.titre">
+    <i class="fas fa-tools"></i> 
+    <span class="btn-text">
+      {{ s.interventionId ? 'Intervention existante' : 'Créer Intervention' }}
+    </span>
+  </button>
+  
+  <div class="secondary-actions">
+    <!-- Bouton Traiter -->
+    <button 
+      class="btn-process"
+      (click)="changeStatut(s, 'EN_TRAITEMENT'); $event.stopPropagation()" 
+      [disabled]="s.statut !== 'RECU'"
+      [attr.aria-label]="'Traiter le signalement ' + s.titre">
+      <i class="fas fa-play-circle"></i>
+      <span class="btn-text">Traiter</span>
+    </button>
+    
+    <!-- Bouton Résoudre -->
+    <button 
+      class="btn-resolve"
+      (click)="changeStatut(s, 'RESOLU'); $event.stopPropagation()" 
+      [disabled]="s.statut === 'RESOLU'"
+      [attr.aria-label]="'Résoudre le signalement ' + s.titre">
+      <i class="fas fa-check-circle"></i>
+      <span class="btn-text">Résoudre</span>
+    </button>
+    
+    <!-- Bouton Détails -->
+    <button 
+      class="btn-details"
+      (click)="viewDetails(s); $event.stopPropagation()"
+      [attr.aria-label]="'Voir les détails de ' + s.titre">
+      <i class="fas fa-eye"></i>
+      <span class="btn-text">Détails</span>
+    </button>
+  </div>
+</div>
+
+  <!-- Modal pour afficher la photo en grand -->
+  <div *ngIf="selectedPhoto" class="photo-modal" (click)="closePhotoModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="close-modal" (click)="closePhotoModal()" title="Fermer">
+        <i class="fas fa-times"></i>
+      </button>
+      <img [src]="getPhotoUrl(selectedPhoto)" [alt]="selectedSignalement?.titre">
+      <div class="photo-info">
+        <h3>{{ selectedSignalement?.titre }}</h3>
+        <p><i class="fas fa-map-marker-alt"></i> {{ selectedSignalement?.adresse }}</p>
+        <p><i class="fas fa-user"></i> Signalé par: {{ selectedSignalement?.contactNom }}</p>
+        <p><i class="fas fa-clock"></i> {{ selectedSignalement?.dateCreation | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !filteredSignalements.length" class="empty">
+    <i class="fas fa-inbox"></i>
+    <p>Aucun signalement trouvé.</p>
+    <p *ngIf="selectedStatut !== 'ALL'">Essayez de changer le filtre de statut.</p>
+  </div>
+</div>

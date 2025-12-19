@@ -1,0 +1,91 @@
+<app-admin-navbar></app-admin-navbar>
+<div class="equipements-container">
+  <div class="header">
+    <h2>Liste des équipements</h2>
+    <button routerLink="/admin/equipements/ajouter" class="btn-add">
+      <i class="fas fa-plus"></i> Ajouter un équipement
+    </button>
+  </div>
+
+  <div class="filters">
+    <input 
+      type="text" 
+      placeholder="Filtrer par type ou adresse..." 
+      [(ngModel)]="filterType" 
+      (input)="onSearchInput($event)"
+    >
+
+    <select [(ngModel)]="filterEtat" (change)="applyFilters()">
+      <option value="">Tous les états</option>
+      <option value="FONCTIONNEL">Fonctionnel</option>
+      <option value="DEFECTUEUX">Défectueux</option>
+    </select>
+
+    <button (click)="clearFilters()" class="filter-btn">Réinitialiser</button>
+  </div>
+
+  <!-- Indicateur de recherche -->
+  <div *ngIf="filterType || filterEtat" class="filter-info">
+    <i class="fas fa-filter"></i>
+    Résultats filtrés : {{ equipements.length }} sur {{ originalEquipements.length }}
+    <button (click)="clearFilters()" class="clear-filter-btn">
+      <i class="fas fa-times"></i> Effacer les filtres
+    </button>
+  </div>
+
+  <!-- Aucun résultat -->
+  <div *ngIf="equipements.length === 0" class="no-data">
+    <i class="fas fa-search"></i>
+    <h3>Aucun équipement trouvé</h3>
+    <p *ngIf="filterType || filterEtat">
+      Essayez de modifier vos critères de recherche
+    </p>
+    <button routerLink="/admin/equipements/ajouter" class="btn-add">
+      <i class="fas fa-plus"></i> Ajouter un équipement
+    </button>
+  </div>
+
+  <!-- Tableau des équipements -->
+  <table *ngIf="equipements.length > 0">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Adresse</th>
+        <th>État</th>
+        <th>Dernières interventions</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let equipement of equipements">
+        <td>{{ equipement.type }}</td>
+        <td>{{ equipement.adresse }}</td>
+        <td>
+          <span class="etat-badge" 
+                [class.fonctionnel]="equipement.etat === 'FONCTIONNEL'" 
+                [class.defectueux]="equipement.etat === 'DEFECTUEUX'">
+            {{ equipement.etat }}
+          </span>
+        </td>
+        <td>
+          <ul *ngIf="equipement.dernieresInterventions && equipement.dernieresInterventions.length > 0">
+            <li *ngFor="let inter of equipement.dernieresInterventions">
+              {{ inter.titre }} ({{ inter.date | date:'short' }}) - {{ inter.technicien }}
+            </li>
+          </ul>
+          <span *ngIf="!equipement.dernieresInterventions || equipement.dernieresInterventions.length === 0">
+            Aucune intervention
+          </span>
+        </td>
+        <td>
+          <button class="btn-modify" (click)="modifierEquipement(equipement.id!)">
+            <i class="fas fa-edit"></i> Modifier
+          </button>
+          <button class="btn-delete" (click)="supprimerEquipement(equipement.id!)">
+            <i class="fas fa-trash"></i> Supprimer
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

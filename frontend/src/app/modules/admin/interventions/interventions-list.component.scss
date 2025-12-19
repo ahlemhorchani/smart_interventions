@@ -1,0 +1,516 @@
+// ============================================
+// INTERVENTIONS LIST PAGE STYLES
+// ============================================
+
+// Variables locales (si non définies dans le fichier principal)
+@use "sass:color";
+
+$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !default;
+$secondary-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !default;
+$warning-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%) !default;
+$info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !default;
+$danger-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !default;
+$dark-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !default;
+$success-gradient: linear-gradient(135deg, #00b894 0%, #00cec9 100%) !default;
+
+$primary-color: #667eea !default;
+$secondary-color: #11998e !default;
+$warning-color: #f6b365 !default;
+$info-color: #4facfe !default;
+$danger-color: #f5576c !default;
+$success-color: #00b894 !default;
+$dark-color: #1a1a2e !default;
+$light-color: #f8f9ff !default;
+
+$shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.07) !default;
+$shadow-md: 0 10px 25px rgba(0, 0, 0, 0.1) !default;
+$shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.15) !default;
+$shadow-xl: 0 25px 60px rgba(0, 0, 0, 0.2) !default;
+$shadow-primary: 0 10px 30px rgba(102, 126, 234, 0.3) !default;
+
+$radius-sm: 12px !default;
+$radius-md: 20px !default;
+$radius-lg: 30px !default;
+$radius-xl: 40px !default;
+
+$transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !default;
+$transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !default;
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: $shadow-md;
+}
+
+// Container principal
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(17, 153, 142, 0.04) 0%, transparent 50%);
+    z-index: 0;
+  }
+}
+
+// Contenu principal
+.interventions-content {
+  position: relative;
+  z-index: 1;
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
+}
+
+// Section des filtres
+.filters {
+  @include glass-effect;
+  border-radius: $radius-lg;
+  padding: 25px;
+  margin-bottom: 30px;
+  animation: slideIn 0.6s ease-out;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: flex-end;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  input, select {
+    flex: 1;
+    min-width: 200px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: $radius-sm;
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    color: #2d3748;
+    transition: $transition-fast;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    &:hover {
+      border-color: #cbd5e0;
+    }
+    
+    @media (max-width: 768px) {
+      min-width: 100%;
+    }
+  }
+  
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23667eea' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+    padding-right: 40px;
+  }
+  
+  button {
+    background: $primary-gradient;
+    color: white;
+    border: none;
+    border-radius: $radius-sm;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: $transition;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-primary;
+    }
+    
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+}
+
+// Table des interventions
+.interventions-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+  background: white;
+  margin-bottom: 30px;
+  animation: slideIn 0.6s ease-out 0.2s;
+  animation-fill-mode: both;
+  
+  thead {
+    background: $dark-gradient;
+    
+    tr {
+      th {
+        padding: 18px 20px;
+        text-align: left;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        
+        &:first-child {
+          padding-left: 25px;
+        }
+        
+        &:last-child {
+          padding-right: 25px;
+        }
+      }
+    }
+  }
+  
+  tbody {
+    tr {
+      background: white;
+      border-bottom: 1px solid #f1f5f9;
+      transition: $transition-fast;
+      
+      &:hover {
+        background: #f8fafc;
+        transform: translateY(-1px);
+        box-shadow: $shadow-sm;
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      td {
+        padding: 18px 20px;
+        font-size: 0.95rem;
+        color: #4a5568;
+        border-bottom: 1px solid #f1f5f9;
+        
+        &:first-child {
+          padding-left: 25px;
+          font-weight: 600;
+          color: #2d3748;
+        }
+        
+        &:last-child {
+          padding-right: 25px;
+        }
+      }
+    }
+  }
+}
+
+// Styles spécifiques pour les colonnes
+.interventions-table {
+  td:nth-child(3), // Urgence
+  td:nth-child(4) { // Statut
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Badges pour urgence et statut
+.urgence-badge,
+.statut-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &.urgent {
+    background: rgba(245, 87, 108, 0.1);
+    color: $danger-color;
+    animation: pulse 2s infinite;
+  }
+  
+  &.normal {
+    background: rgba(0, 184, 148, 0.1);
+    color: $success-color;
+  }
+  
+  &.en_attente {
+    background: rgba(246, 179, 101, 0.1);
+    color: $warning-color;
+  }
+  
+  &.en_cours {
+    background: rgba(102, 126, 234, 0.1);
+    color: $primary-color;
+  }
+  
+  &.terminee {
+    background: rgba(0, 184, 148, 0.1);
+    color: $success-color;
+  }
+}
+
+// Actions dans le tableau
+.interventions-table td:last-child {
+  white-space: nowrap;
+  
+  button {
+    padding: 8px 12px;
+    border-radius: $radius-sm;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: $transition-fast;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-right: 8px;
+    
+    &:last-child {
+      margin-right: 0;
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+    
+    // Modifier
+    &:first-child {
+      background: rgba(102, 126, 234, 0.1);
+      color: $primary-color;
+      
+      &:hover {
+        background: rgba(102, 126, 234, 0.2);
+      }
+    }
+    
+    // Supprimer
+    &:nth-child(2) {
+      background: rgba(245, 87, 108, 0.1);
+      color: #f5576c;
+      
+      &:hover {
+        background: rgba(245, 87, 108, 0.2);
+      }
+    }
+    
+    // Affecter
+    &:last-child {
+      background: rgba(0, 184, 148, 0.1);
+      color: $success-color;
+      
+      &:hover {
+        background: rgba(0, 184, 148, 0.2);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      margin-bottom: 5px;
+      width: 100%;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+// Pagination
+.pagination {
+  @include glass-effect;
+  border-radius: $radius-lg;
+  padding: 25px;
+  margin-top: 30px;
+  animation: slideIn 0.6s ease-out 0.4s;
+  animation-fill-mode: both;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  span {
+    font-size: 0.95rem;
+    color: #4a5568;
+    font-weight: 500;
+    
+    strong {
+      color: $primary-color;
+    }
+  }
+  
+  button {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: $radius-sm;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a5568;
+    cursor: pointer;
+    transition: $transition-fast;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+    
+    &:hover:not(:disabled) {
+      border-color: $primary-color;
+      color: $primary-color;
+      transform: translateY(-2px);
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    @media (max-width: 768px) {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// État vide
+.empty-state {
+  @include glass-effect;
+  border-radius: $radius-lg;
+  padding: 50px 30px;
+  text-align: center;
+  margin-top: 30px;
+  
+  i {
+    font-size: 64px;
+    color: $primary-color;
+    margin-bottom: 20px;
+    display: block;
+    opacity: 0.7;
+  }
+  
+  h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    font-size: 0.95rem;
+    color: #718096;
+    margin-bottom: 25px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+  
+  button {
+    background: $primary-gradient;
+    color: white;
+    padding: 12px 30px;
+    border-radius: $radius-sm;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: $transition;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: $shadow-primary;
+    }
+  }
+}
+
+// Responsive pour la table
+@media (max-width: 1200px) {
+  .interventions-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .interventions-table th,
+  .interventions-table td {
+    padding: 12px 15px;
+    font-size: 0.9rem;
+  }
+  
+  .interventions-table td:last-child {
+    min-width: 200px;
+  }
+}
+
+// Animations
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// Mixin glass-effect
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: $shadow-md;
+}

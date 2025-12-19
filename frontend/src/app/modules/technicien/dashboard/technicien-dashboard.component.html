@@ -1,0 +1,344 @@
+<!-- technicien-dashboard.component.html -->
+<div class="technicien-dashboard">
+    <nav class="dashboard-navbar">
+    <div class="navbar-container">
+      <!-- Logo et retour accueil -->
+      <div class="navbar-left">
+        <a routerLink="/" class="back-home-btn">
+          <i class="fas fa-arrow-left"></i>
+          <span>Retour à l'accueil</span>
+        </a>
+        <div class="navbar-brand">
+          <i class="fas fa-city"></i>
+          <span>Smart Interventions</span>
+        </div>
+      </div>
+
+      <!-- Navigation centrale -->
+      <div class="navbar-center">
+        <a routerLink="/technicien" 
+           class="nav-item" 
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact: true}">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Tableau de bord</span>
+        </a>
+        <a routerLink="/technicien/interventions" 
+           class="nav-item"
+           routerLinkActive="active">
+          <i class="fas fa-list-check"></i>
+          <span>Interventions</span>
+        </a>
+     
+      </div>
+
+      <!-- Menu utilisateur -->
+      <div class="navbar-right">
+        <div class="user-menu">
+          <button class="user-btn" (click)="toggleUserMenu()">
+            <div class="user-avatar">
+              {{ getUserInitials() }}
+            </div>
+            <div class="user-info">
+              <span class="user-name">{{ user?.prenom }} {{ user?.nom }}</span>
+              <span class="user-role">Technicien</span>
+            </div>
+            <i class="fas fa-chevron-down" [class.rotate-180]="showUserMenu"></i>
+          </button>
+          
+          <div class="user-dropdown" [class.show]="showUserMenu">
+            <div class="dropdown-header">
+              <div class="dropdown-avatar">
+                {{ getUserInitials() }}
+              </div>
+              <div class="dropdown-user-info">
+                <strong>{{ user?.prenom }} {{ user?.nom }}</strong>
+                <span class="dropdown-email">{{ user?.email }}</span>
+                <div class="role-badge">Technicien</div>
+              </div>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <a routerLink="/profile" class="dropdown-item" (click)="closeUserMenu()">
+              <i class="fas fa-user-cog"></i>
+              <span>Mon profil</span>
+            </a>
+            
+            
+          
+            
+            
+            
+            <div class="dropdown-divider"></div>
+            
+            <button class="dropdown-item logout" (click)="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Déconnexion</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Boutons d'action rapide -->
+       
+      </div>
+    </div>
+  </nav>
+  <!-- Header du dashboard -->
+  <header class="dashboard-header">
+    <div class="user-welcome">
+      <div class="avatar-large">
+        <i class="fas fa-user-cog"></i>
+      </div>
+      <div class="user-info">
+        <h1>Bonjour, {{ user?.prenom }} {{ user?.nom }} </h1>
+        <p class="user-role">
+          <i class="fas fa-badge-check"></i> Technicien Municipal
+          <span class="user-email">{{ user?.email }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="today-stats">
+        <i class="fas fa-calendar-day"></i>
+        <span>Aujourd'hui : {{ today | date:'EEEE d MMMM yyyy' }}</span>
+      </div>
+      <button class="btn-refresh" (click)="loadInterventions()" title="Rafraîchir">
+        <i class="fas fa-sync-alt" [class.rotate]="isLoading"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Statistiques -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon assigned">
+          <i class="fas fa-tasks"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-title">Assignées</h3>
+          <p class="stat-value">{{ interventionsAssignees.length }}</p>
+          <p class="stat-desc">En attente de prise en charge</p>
+        </div>
+        <div class="stat-badge" *ngIf="interventionsAssignees.length > 0">
+          <span class="badge-warning">{{ interventionsAssignees.length }} nouvelles</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon in-progress">
+          <i class="fas fa-tools"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-title">En cours</h3>
+          <p class="stat-value">{{ interventionsEnCours.length }}</p>
+          <p class="stat-desc">Actuellement en intervention</p>
+        </div>
+        <div class="stat-badge" *ngIf="interventionsEnCours.length > 0">
+          <span class="badge-info">{{ interventionsEnCours.length }} actives</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon completed">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-title">Terminées</h3>
+          <p class="stat-value">{{ interventionsTerminees }}</p>
+          <p class="stat-desc">Cette semaine</p>
+        </div>
+        <div class="stat-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getCompletionRate()"></div>
+          </div>
+          <span class="progress-text">{{ getCompletionRate() }}% complété</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon efficiency">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-title">Efficacité</h3>
+          <p class="stat-value">{{ getEfficiency() }}%</p>
+          <p class="stat-desc">Taux de résolution</p>
+        </div>
+        <div class="trend-indicator" [class.trend-up]="getEfficiency() > 80" [class.trend-down]="getEfficiency() <= 80">
+          <i class="fas" [class.fa-arrow-up]="getEfficiency() > 80" [class.fa-arrow-down]="getEfficiency() <= 80"></i>
+          {{ getEfficiency() > 80 ? '+5%' : '-2%' }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interventions assignées -->
+  <section class="interventions-section" *ngIf="interventionsAssignees.length > 0">
+    <div class="section-header">
+      <h2><i class="fas fa-clock"></i> Interventions à traiter</h2>
+      <span class="section-badge">{{ interventionsAssignees.length }} en attente</span>
+    </div>
+    
+    <div class="interventions-grid">
+      <div *ngFor="let intervention of interventionsAssignees" class="intervention-card assigned">
+        <div class="card-header">
+          <div class="intervention-type">
+            <i class="fas" [ngClass]="getInterventionIcon(intervention.type)"></i>
+            <span class="type-label">{{ getInterventionTypeLabel(intervention.type) }}</span>
+          </div>
+          <div class="urgency-badge" [class.urgent]="intervention.urgence === 'URGENT'">
+            {{ intervention.urgence === 'URGENT' ? 'URGENT' : 'NORMAL' }}
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <h3 class="intervention-title">{{ intervention.titre }}</h3>
+          <p class="intervention-description">{{ intervention.description }}</p>
+          
+          <div class="intervention-meta">
+            <div class="meta-item">
+              <i class="far fa-calendar"></i>
+              <span>{{ intervention.dateCreation | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="meta-item">
+              <i class="far fa-clock"></i>
+              <span>{{ intervention.dateCreation | date:'HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-actions">
+          <button class="btn-start" (click)="demarrerIntervention(intervention.id)">
+            <i class="fas fa-play-circle"></i> Démarrer l'intervention
+          </button>
+          <button class="btn-details" (click)="viewInterventionDetails(intervention.id)">
+            <i class="fas fa-info-circle"></i> Détails
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interventions en cours -->
+  <section class="interventions-section" *ngIf="interventionsEnCours.length > 0">
+    <div class="section-header">
+      <h2><i class="fas fa-tools"></i> Interventions en cours</h2>
+      <span class="section-badge">{{ interventionsEnCours.length }} active(s)</span>
+    </div>
+    
+    <div class="interventions-grid">
+      <div *ngFor="let intervention of interventionsEnCours" class="intervention-card in-progress">
+        <div class="card-header">
+          <div class="intervention-type">
+            <i class="fas" [ngClass]="getInterventionIcon(intervention.type)"></i>
+            <span class="type-label">{{ getInterventionTypeLabel(intervention.type) }}</span>
+          </div>
+          <div class="status-badge">
+            <i class="fas fa-spinner fa-spin"></i> EN COURS
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <h3 class="intervention-title">{{ intervention.titre }}</h3>
+          <p class="intervention-description">{{ intervention.description }}</p>
+          
+          <div class="time-tracking">
+            <div class="time-info">
+              <i class="fas fa-hourglass-start"></i>
+              <span>Débutée : {{ intervention.dateDebut | date:'HH:mm' }}</span>
+            </div>
+            <div class="time-info">
+              <i class="fas fa-clock"></i>
+              <span>Durée : {{ getDuration(intervention.dateDebut) }}</span>
+            </div>
+          </div>
+          
+          <div class="progress-indicator">
+            <label>Progression</label>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getInterventionProgress(intervention)"></div>
+            </div>
+            <span class="progress-percent">{{ getInterventionProgress(intervention) }}%</span>
+          </div>
+        </div>
+        
+        <div class="card-actions">
+          <button class="btn-complete" (click)="terminerIntervention(intervention.id)">
+            <i class="fas fa-check-circle"></i> Terminer l'intervention
+          </button>
+          <button class="btn-pause" (click)="pauseIntervention(intervention.id)">
+            <i class="fas fa-pause-circle"></i> Mettre en pause
+          </button>
+          <button class="btn-report" (click)="addReport(intervention.id)">
+            <i class="fas fa-file-alt"></i> Ajouter un rapport
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Actions rapides -->
+  <section class="quick-actions">
+    <h2><i class="fas fa-bolt"></i> Actions rapides</h2>
+    <div class="actions-grid">
+      <button class="action-card" (click)="loadInterventions()">
+        <div class="action-icon">
+          <i class="fas fa-sync-alt"></i>
+        </div>
+        <h3>Rafraîchir</h3>
+        <p>Mettre à jour la liste</p>
+      </button>
+      
+      <button class="action-card" routerLink="/technicien/interventions">
+        <div class="action-icon">
+          <i class="fas fa-list-alt"></i>
+        </div>
+        <h3>Toutes les interventions</h3>
+        <p>Voir l'historique complet</p>
+      </button>
+      
+      <button class="action-card" (click)="openCalendar()">
+        <div class="action-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <h3>Calendrier</h3>
+        <p>Planifier les interventions</p>
+      </button>
+      
+      <button class="action-card" (click)="generateReport()">
+        <div class="action-icon">
+          <i class="fas fa-chart-pie"></i>
+        </div>
+        <h3>Rapports</h3>
+        <p>Générer un rapport hebdo</p>
+      </button>
+    </div>
+  </section>
+
+  <!-- Aucune intervention -->
+  <div *ngIf="interventionsAssignees.length === 0 && interventionsEnCours.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <i class="fas fa-clipboard-check"></i>
+    </div>
+    <h3>Aucune intervention en attente</h3>
+    <p>Vous n'avez actuellement aucune intervention assignée.</p>
+    <div class="empty-actions">
+      <button class="btn-primary" (click)="loadInterventions()">
+        <i class="fas fa-sync-alt"></i> Vérifier les nouvelles interventions
+      </button>
+      <button class="btn-outline" routerLink="/technicien/interventions">
+        <i class="fas fa-history"></i> Voir l'historique
+      </button>
+    </div>
+  </div>
+
+  <!-- Chargement -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="loading-spinner">
+      <i class="fas fa-cog fa-spin"></i>
+      <p>Chargement des interventions...</p>
+    </div>
+  </div>
+</div>

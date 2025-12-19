@@ -1,0 +1,405 @@
+// ============================================
+// ADMIN NAVBAR STYLES
+// ============================================
+$primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$secondary: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+$accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+$dark: #1a1a2e;
+$light: #f8f9ff;
+
+$shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-md: 0 10px 25px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.15);
+
+$radius-sm: 12px;
+$radius-md: 20px;
+$radius-lg: 30px;
+
+$transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+$transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: $shadow-md;
+}
+
+.admin-navbar {
+  @include glass-effect;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 0 30px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// ============================================
+// BOUTON RETOUR
+// ============================================
+.nav-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: rgba(102, 126, 234, 0.1);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  border-radius: $radius-sm;
+  color: #667eea;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: $transition;
+  
+  i {
+    font-size: 16px;
+    transition: $transition-fast;
+  }
+  
+  &:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateX(-5px);
+    
+    i {
+      transform: translateX(-3px);
+    }
+  }
+}
+
+// ============================================
+// BRAND / LOGO
+// ============================================
+.nav-brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+  }
+  
+  .brand-icon {
+    width: 50px;
+    height: 50px;
+    background: $primary;
+    border-radius: $radius-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  }
+  
+  .brand-text {
+    font-size: 24px;
+    font-weight: 800;
+    background: $primary;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+}
+
+// ============================================
+// MENU UTILISATEUR
+// ============================================
+.user-menu {
+  position: relative;
+}
+
+.user-btn {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: $transition;
+  box-shadow: $shadow-sm;
+  
+  &:hover {
+    background: white;
+    border-color: #667eea;
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+  .user-name {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 14px;
+  }
+  
+  .user-role {
+    font-size: 12px;
+    color: #718096;
+    background: rgba(102, 126, 234, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 2px;
+  }
+}
+
+.user-btn i {
+  font-size: 12px;
+  color: #718096;
+  transition: $transition-fast;
+  
+  &.rotate {
+    transform: rotate(180deg);
+  }
+}
+
+// ============================================
+// DROPDOWN MENU
+// ============================================
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 15px);
+  right: 0;
+  width: 300px;
+  background: white;
+  border-radius: $radius-md;
+  box-shadow: $shadow-lg;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: $transition;
+  z-index: 1001;
+  
+  &.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 25px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    transform: rotate(45deg);
+    box-shadow: -5px -5px 10px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.dropdown-header {
+  padding: 25px;
+  background: linear-gradient(135deg, #f8f9ff, #eef1ff);
+  border-radius: $radius-md $radius-md 0 0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.dropdown-avatar {
+  width: 50px;
+  height: 50px;
+  background: $primary;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  font-size: 16px;
+}
+
+.dropdown-user-info {
+  flex: 1;
+  
+  strong {
+    display: block;
+    font-size: 16px;
+    color: #2d3748;
+    margin-bottom: 4px;
+  }
+  
+  .user-email {
+    font-size: 13px;
+    color: #718096;
+  }
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+  margin: 8px 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 25px;
+  text-decoration: none;
+  color: #4a5568;
+  transition: $transition-fast;
+  border-left: 4px solid transparent;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  
+  &:hover {
+    background: rgba(102, 126, 234, 0.05);
+    color: #667eea;
+    border-left-color: #667eea;
+    padding-left: 28px;
+    
+    i {
+      transform: scale(1.2);
+    }
+  }
+  
+  i {
+    width: 20px;
+    text-align: center;
+    transition: $transition-fast;
+    color: #718096;
+  }
+  
+  &.logout {
+    color: #ff7675;
+    
+    &:hover {
+      background: rgba(255, 118, 117, 0.05);
+      border-left-color: #ff7675;
+    }
+    
+    i {
+      color: #ff7675;
+    }
+  }
+}
+
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 1000;
+}
+
+// ============================================
+// RESPONSIVE DESIGN
+// ============================================
+@media (max-width: 1200px) {
+  .admin-navbar {
+    padding: 0 20px;
+  }
+  
+  .brand-text {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .nav-back-btn span {
+    display: none;
+  }
+  
+  .brand-text {
+    display: none;
+  }
+  
+  .user-info {
+    display: none;
+  }
+  
+  .dropdown-menu {
+    width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-navbar {
+    height: 70px;
+  }
+  
+  .nav-back-btn {
+    padding: 10px;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    justify-content: center;
+    
+    i {
+      margin: 0;
+    }
+  }
+  
+  .brand-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+  
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+    font-size: 12px;
+  }
+  
+  .dropdown-menu {
+    width: 250px;
+    right: -20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-navbar {
+    padding: 0 15px;
+  }
+  
+  .dropdown-menu {
+    width: 220px;
+  }
+}

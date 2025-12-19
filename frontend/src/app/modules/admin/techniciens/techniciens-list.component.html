@@ -1,0 +1,147 @@
+<!-- techniciens-list.component.html -->
+<app-admin-navbar></app-admin-navbar>
+
+<!-- Header -->
+<div class="techniciens-header">
+  <div class="header-content">
+    <div class="page-title">
+      <div class="page-icon">
+        <i class="fas fa-users-cog"></i>
+      </div>
+      <div class="page-title-text">
+        <h1>Gestion des Techniciens</h1>
+        <span class="page-subtitle">
+          Liste complète et gestion du personnel technique
+        </span>
+      </div>
+    </div>
+    
+    <div class="page-info">
+      <div class="info-stats">
+        <div class="info-stat">
+          <i class="fas fa-user-check"></i>
+          {{ getDisponibleCount() }} techniciens disponibles
+        </div>
+        <div class="info-stat">
+          <i class="fas fa-clock"></i>
+          {{ getTotalCount() }} techniciens au total
+        </div>
+      </div>
+      <a routerLink="/admin/techniciens/nouveau" class="btn-add-technicien">
+        <i class="fas fa-user-plus"></i>
+        Ajouter un technicien
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="techniciens-container">
+  <!-- Section des filtres -->
+  <div class="filters">
+    <input type="text" 
+           placeholder="Filtrer par nom ou prénom..." 
+           [(ngModel)]="filterNom" 
+           (input)="applyFilters()">
+    
+    <select [(ngModel)]="filterDisponibilite" (change)="applyFilters()">
+      <option value="">Tous les techniciens</option>
+      <option value="true">Disponible</option>
+      <option value="false">Indisponible</option>
+    </select>
+    
+    <button (click)="clearFilters()">
+      <i class="fas fa-redo"></i>
+      Réinitialiser
+    </button>
+  </div>
+
+  <!-- Table des techniciens -->
+  <table class="techniciens-table">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Email</th>
+        <th>Disponibilité</th>
+        <th>Position</th>
+        <th>Téléphone</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- MODIFIÉ: Utilisez filteredTechniciens au lieu de techniciens -->
+      <tr *ngFor="let technicien of filteredTechniciens">
+        <!-- Nom avec avatar -->
+        <td class="name-cell">
+          <div class="avatar">
+            {{ technicien.nom.charAt(0) }}{{ technicien.prenom.charAt(0) }}
+          </div>
+          <div class="name-info">
+            <span class="nom">{{ technicien.nom }}</span>
+            <span class="prenom">{{ technicien.prenom }}</span>
+          </div>
+        </td>
+        
+        <!-- Prénom (colonne séparée pour compatibilité) -->
+        <td>{{ technicien.prenom }}</td>
+        
+        <!-- Email -->
+        <td>
+          <a href="mailto:{{ technicien.email }}" class="email-link">
+            {{ technicien.email }}
+          </a>
+        </td>
+        
+        <!-- Disponibilité -->
+        <td>
+          <span class="disponibilite-badge" [class]="technicien.disponibilite ? 'disponible' : 'indisponible'">
+            {{ technicien.disponibilite ? 'Disponible' : 'Indisponible' }}
+          </span>
+        </td>
+        
+        <!-- Position -->
+        <td [class.undefined]="!technicien.position" class="position-cell">
+          {{ technicien.position || 'Non défini' }}
+        </td>
+        
+        <!-- Téléphone -->
+        <td [class.undefined]="!technicien.numeroTelephone" class="phone-cell">
+          {{ technicien.numeroTelephone || 'Non défini' }}
+        </td>
+        
+        <!-- Actions -->
+        <td class="actions-cell">
+          <div class="actions-group">
+            <button (click)="modifierTechnicien(technicien.id!)">
+              <i class="fas fa-edit"></i>
+              Modifier
+            </button>
+            <button (click)="supprimerTechnicien(technicien.id!)">
+              <i class="fas fa-trash"></i>
+              Supprimer
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- État vide -->
+  <!-- MODIFIÉ: Utilisez filteredTechniciens et vérifiez loading -->
+  <div class="empty-state" *ngIf="filteredTechniciens.length === 0 && !loading">
+    <i class="fas fa-user-slash"></i>
+    <h3>Aucun technicien trouvé</h3>
+    <p>Aucun technicien ne correspond à vos critères de recherche. Essayez de modifier vos filtres ou ajoutez un nouveau technicien.</p>
+    <button (click)="clearFilters()">
+      <i class="fas fa-redo"></i>
+      Réinitialiser les filtres
+    </button>
+  </div>
+
+  <!-- Chargement -->
+  <div class="loading-state" *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i>
+    <h3>Chargement des techniciens...</h3>
+    <p>Veuillez patienter pendant que nous récupérons les données.</p>
+  </div>
+</div>

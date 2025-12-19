@@ -1,0 +1,108 @@
+<!-- interventions-list.component.html -->
+<app-admin-navbar></app-admin-navbar>
+
+<div class="interventions-content">
+  <!-- Section des filtres -->
+  <div class="filters">
+    <input type="text" 
+           placeholder="Filtrer par type..." 
+           [(ngModel)]="filterType" 
+           (input)="applyFilters()">
+    
+    <select [(ngModel)]="filterStatut" (change)="applyFilters()">
+      <option value="">Tous statuts</option>
+      <option value="EN_ATTENTE">EN_ATTENTE</option>
+      <option value="EN_COURS">EN_COURS</option>
+      <option value="TERMINEE">TERMINEE</option>
+    </select>
+    
+    <select [(ngModel)]="filterUrgence" (change)="applyFilters()">
+      <option value="">Tous urgences</option>
+      <option value="NORMAL">NORMAL</option>
+      <option value="URGENT">URGENT</option>
+    </select>
+    
+    <button (click)="clearFilters()">
+      <i class="fas fa-redo"></i>
+      Réinitialiser
+    </button>
+  </div>
+
+  <!-- Table des interventions -->
+  <table class="interventions-table">
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Type</th>
+        <th>Urgence</th>
+        <th>Statut</th>
+        <th>Technicien</th>
+        <th>Date Création</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let intervention of paginatedInterventions">
+        <td>{{ intervention.titre }}</td>
+        <td>{{ intervention.type }}</td>
+        <td>
+          <span class="urgence-badge" [class]="intervention.urgence.toLowerCase()">
+            {{ intervention.urgence }}
+          </span>
+        </td>
+        <td>
+          <span class="statut-badge" [class]="intervention.statut.toLowerCase()">
+            {{ intervention.statut }}
+          </span>
+        </td>
+        <td>{{ intervention.technicienId || '-' }}</td>
+        <td>{{ intervention.dateCreation | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td>
+          <button (click)="modifierIntervention(intervention.id)">
+            <i class="fas fa-edit"></i>
+            Modifier
+          </button>
+          <button (click)="supprimerIntervention(intervention.id)">
+            <i class="fas fa-trash"></i>
+            Supprimer
+          </button>
+          <button (click)="affecterTechnicien(intervention)">
+            <i class="fas fa-user-check"></i>
+            Affecter
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages() > 1">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+      <i class="fas fa-chevron-left"></i>
+      Précédent
+    </button>
+    <span>Page <strong>{{currentPage}}</strong> / <strong>{{totalPages()}}</strong></span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages()">
+      Suivant
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- État vide -->
+  <div class="empty-state" *ngIf="filteredInterventions.length === 0 && interventions.length > 0">
+    <i class="fas fa-search"></i>
+    <h3>Aucune intervention trouvée</h3>
+    <p>Aucune intervention ne correspond à vos critères de recherche. Essayez de modifier vos filtres.</p>
+    <button (click)="clearFilters()">
+      <i class="fas fa-redo"></i>
+      Réinitialiser les filtres
+    </button>
+  </div>
+
+  <!-- Chargement -->
+  <div class="empty-state" *ngIf="interventions.length === 0">
+    <i class="fas fa-spinner fa-spin"></i>
+    <h3>Chargement des interventions...</h3>
+    <p>Veuillez patienter pendant que nous récupérons les données.</p>
+  </div>
+</div>

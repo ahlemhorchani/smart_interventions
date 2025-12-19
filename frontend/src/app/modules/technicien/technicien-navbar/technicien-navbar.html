@@ -1,0 +1,71 @@
+<nav class="dashboard-navbar">
+  <div class="navbar-container">
+    <!-- Logo et retour accueil -->
+    <div class="navbar-left">
+      <a routerLink="/" class="back-home-btn">
+        <i class="fas fa-arrow-left"></i>
+        <span>Retour à l'accueil</span>
+      </a>
+      <div class="navbar-brand">
+        <i class="fas fa-city"></i>
+        <span>Smart Interventions</span>
+      </div>
+    </div>
+
+    <!-- Navigation centrale -->
+    <div class="navbar-center">
+      <a routerLink="/technicien" 
+         class="nav-item" 
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{exact: true}">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Tableau de bord</span>
+      </a>
+      <a routerLink="/technicien/interventions" 
+         class="nav-item"
+         routerLinkActive="active">
+        <i class="fas fa-list-check"></i>
+        <span>Interventions</span>
+      </a>
+    </div>
+
+    <!-- Menu utilisateur -->
+    <div class="navbar-right">
+      <div class="user-menu">
+        <button class="user-btn" (click)="toggleUserMenu()">
+          <div class="user-avatar">{{ getUserInitials() }}</div>
+          <div class="user-info">
+            <span class="user-name">{{ user?.prenom }} {{ user?.nom }}</span>
+            <span class="user-role">Technicien</span>
+          </div>
+          <i class="fas fa-chevron-down" [class.rotate-180]="showUserMenu"></i>
+        </button>
+
+        <div class="user-dropdown" [class.show]="showUserMenu">
+          <div class="dropdown-header">
+            <div class="dropdown-avatar">{{ getUserInitials() }}</div>
+            <div class="dropdown-user-info">
+              <strong>{{ user?.prenom }} {{ user?.nom }}</strong>
+              <span class="dropdown-email">{{ user?.email }}</span>
+              <div class="role-badge">Technicien</div>
+            </div>
+          </div>
+
+          <div class="dropdown-divider"></div>
+
+          <a routerLink="/profile" class="dropdown-item" (click)="closeUserMenu()">
+            <i class="fas fa-user-cog"></i>
+            <span>Mon profil</span>
+          </a>
+
+          <div class="dropdown-divider"></div>
+
+          <button class="dropdown-item logout" (click)="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Déconnexion</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

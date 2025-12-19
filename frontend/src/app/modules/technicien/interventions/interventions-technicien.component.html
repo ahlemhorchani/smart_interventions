@@ -1,0 +1,161 @@
+<app-technicien-navbar></app-technicien-navbar>
+<div class="technician-interventions">
+  <!-- En-tête -->
+  <div class="tech-header">
+    <h3>
+      <i class="fas fa-tools"></i>
+      Interventions du technicien
+      <span *ngIf="technicienInfo" class="tech-name">
+        {{ technicienInfo.prenom }} {{ technicienInfo.nom }}
+      </span>
+    </h3>
+       
+    <div class="tech-status">
+      <div class="status-dot"></div>
+      <span>Connecté</span>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="tech-filters">
+    <div class="filter-row">
+      <div>
+        <label class="form-label">
+          <i class="fas fa-filter"></i> Statut
+        </label>
+        <select class="form-select" [(ngModel)]="statutFilter">
+          <option value="TOUS">Tous</option>
+          <option value="EN_ATTENTE">En attente</option>
+          <option value="EN_COURS">En cours</option>
+          <option value="TERMINEE">Terminées</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">
+          <i class="fas fa-exclamation-triangle"></i> Urgence
+        </label>
+        <select class="form-select" [(ngModel)]="urgenceFilter">
+          <option value="TOUS">Toutes</option>
+          <option value="NORMAL">Normales</option>
+          <option value="URGENT">Urgentes</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau -->
+  <div class="tech-table-card">
+    <div class="table-header">
+      <h4><i class="fas fa-list"></i> Liste des interventions</h4>
+      <div class="table-stats">
+        <div class="stat total">
+          <i class="fas fa-layer-group"></i> Total: {{stats.total}}
+        </div>
+        <div class="stat pending">
+          <i class="fas fa-clock"></i> En attente: {{stats.enAttente}}
+        </div>
+        <div class="stat active">
+          <i class="fas fa-play-circle"></i> En cours: {{stats.enCours}}
+        </div>
+        <div class="stat completed">
+          <i class="fas fa-check-circle"></i> Terminées: {{stats.terminees}}
+        </div>
+      </div>
+    </div>
+    
+    <div class="table-body">
+      <!-- Chargement -->
+      <div *ngIf="loading" class="loading-state">
+        <div class="tech-spinner"></div>
+        <p>Chargement des interventions...</p>
+      </div>
+
+      <!-- Erreur -->
+      <div *ngIf="errorMessage && !loading" class="error-state">
+        <div class="alert-danger">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div class="alert-content">
+            <p>{{ errorMessage }}</p>
+          </div>
+          <button class="btn-retry" (click)="loadInterventions()">
+            <i class="fas fa-redo"></i> Réessayer
+          </button>
+        </div>
+      </div>
+
+      <!-- Aucune intervention -->
+      <div *ngIf="!loading && !errorMessage && interventions.length === 0" class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <h5>Aucune intervention</h5>
+        <p>Vous n'avez aucune intervention assignée pour le moment.</p>
+      </div>
+
+      <!-- Tableau -->
+      <div *ngIf="!loading && interventions.length > 0" class="table-responsive">
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th>Titre</th>
+              <th>Type</th>
+              <th>Urgence</th>
+              <th>Statut</th>
+              <th>Date création</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let intervention of filteredInterventions">
+              <td data-label="Titre">
+                <div class="intervention-title">
+                  <strong>{{ intervention.titre }}</strong>
+                  <small>{{ truncateText(intervention.description, 50) }}</small>
+                </div>
+              </td>
+              <td data-label="Type">
+                <span class="badge badge-type">{{ intervention.type }}</span>
+              </td>
+              <td data-label="Urgence">
+                <span class="badge badge-urgence" 
+                      [ngClass]="{'urgent': intervention.urgence === 'URGENT', 'normal': intervention.urgence === 'NORMAL'}">
+                  {{ intervention.urgence }}
+                </span>
+              </td>
+              <td data-label="Statut">
+                <span class="badge badge-statut"
+                      [ngClass]="{
+                        'pending': intervention.statut === 'EN_ATTENTE',
+                        'active': intervention.statut === 'EN_COURS',
+                        'completed': intervention.statut === 'TERMINEE'
+                      }">
+                  {{ intervention.statut }}
+                </span>
+              </td>
+              <td data-label="Date création" class="date-cell">
+                <i class="far fa-calendar"></i> {{ formatDate(intervention.dateCreation) }}
+              </td>
+              <td data-label="Actions">
+                <div class="btn-group">
+                  <button *ngIf="intervention.statut === 'EN_ATTENTE'" 
+                          class="btn-action btn-start"
+                          (click)="changerStatut(intervention, 'EN_COURS')"
+                          title="Démarrer l'intervention">
+                    <i class="fas fa-play"></i>
+                  </button>
+                  <button *ngIf="intervention.statut === 'EN_COURS'" 
+                          class="btn-action btn-complete"
+                          (click)="changerStatut(intervention, 'TERMINEE')"
+                          title="Terminer l'intervention">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <button class="btn-action btn-view" title="Voir les détails">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

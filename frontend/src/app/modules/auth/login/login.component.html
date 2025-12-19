@@ -1,0 +1,111 @@
+<div class="auth-container">
+  <div class="auth-card glass-card">
+    <div class="auth-header">
+      <div class="auth-logo">
+        <div class="logo-icon">
+          <i class="fas fa-sign-in-alt"></i>
+        </div>
+        <h2>Connexion</h2>
+      </div>
+      <p class="auth-subtitle">Connectez-vous à votre compte Smart Interventions</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-group">
+        <label for="email">
+          <i class="fas fa-envelope"></i> Email
+        </label>
+        <input 
+          id="email"
+          type="email" 
+          formControlName="email" 
+          placeholder="votre@email.com"
+          [class.invalid]="form.controls.email.invalid && form.controls.email.touched">
+        <div class="error-message" *ngIf="form.controls.email.invalid && form.controls.email.touched">
+          <span *ngIf="form.controls.email.errors?.['required']">L'email est requis</span>
+          <span *ngIf="form.controls.email.errors?.['email']">Format d'email invalide</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">
+          <i class="fas fa-lock"></i> Mot de passe
+        </label>
+        <div class="password-input">
+          <input 
+            id="password"
+            [type]="showPassword ? 'text' : 'password'" 
+            formControlName="motDePasse" 
+            placeholder="Votre mot de passe"
+            [class.invalid]="form.controls.motDePasse.invalid && form.controls.motDePasse.touched">
+          <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
+            <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="form.controls.motDePasse.invalid && form.controls.motDePasse.touched">
+          <span *ngIf="form.controls.motDePasse.errors?.['required']">Le mot de passe est requis</span>
+        </div>
+        <div class="forgot-password">
+          <a href="#" class="auth-link">
+            <i class="fas fa-question-circle"></i> Mot de passe oublié ?
+          </a>
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn btn-primary btn-block auth-button"
+        [disabled]="form.invalid || isLoading">
+        <span *ngIf="!isLoading">
+          <i class="fas fa-sign-in-alt"></i> Se connecter
+        </span>
+        <span *ngIf="isLoading" class="loading">
+          <i class="fas fa-spinner fa-spin"></i> Connexion...
+        </span>
+      </button>
+
+      <div class="auth-divider">
+        <span>Ou</span>
+      </div>
+
+      <button type="button" class="btn btn-outline btn-block" routerLink="/auth/register">
+        <i class="fas fa-user-plus"></i> Créer un compte
+      </button>
+
+      <div class="auth-links">
+        <a routerLink="/" class="back-home">
+          <i class="fas fa-home"></i> Retour à l'accueil
+        </a>
+      </div>
+    </form>
+
+    <div *ngIf="error" class="global-error">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ error }}</span>
+    </div>
+  </div>
+
+  <div class="auth-features">
+    <div class="feature">
+      <div class="feature-icon">
+        <i class="fas fa-city"></i>
+      </div>
+      <h3>Gestion urbaine</h3>
+      <p>Contribuez à l'amélioration de votre ville</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h3>Suivi en temps réel</h3>
+      <p>Visualisez l'avancement des interventions</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3>Collaboration</h3>
+      <p>Travaillez avec les services municipaux</p>
+    </div>
+  </div>
+</div>

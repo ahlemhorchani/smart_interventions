@@ -1,0 +1,37 @@
+<!-- src/app/modules/citoyen/suivi/mes-signalements.component.html -->
+<div class="container">
+  <h2>Mes signalements</h2>
+
+  <div *ngIf="loading">
+    <p>Chargement des signalements...</p>
+  </div>
+
+  <div *ngIf="!loading && signalements.length === 0">
+    <p>Vous n'avez aucun signalement pour le moment.</p>
+  </div>
+
+  <table *ngIf="!loading && signalements.length > 0" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Statut</th>
+        <th>Localisation</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let s of signalements">
+        <td>{{ s.titre }}</td>
+        <td>{{ s.statut }}</td>
+        <td>{{ s.localisation }}</td>
+        <td>{{ formatDate(s.dateCreation) }}</td>
+        <td>
+          <a [routerLink]="['/citoyen/suivi', s.id]" class="btn btn-sm btn-primary">
+            Voir détails
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

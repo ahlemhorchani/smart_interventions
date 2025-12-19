@@ -1,0 +1,420 @@
+<app-admin-navbar></app-admin-navbar>
+<div class="intervention-container">
+  <div class="intervention-card">
+    <h2><i class="fas fa-tools"></i> Créer une nouvelle intervention</h2>
+    <p class="subtitle">Système intelligent d'affectation des techniciens</p>
+
+    <form [formGroup]="interventionForm" (ngSubmit)="submitForm()">
+      
+      <!-- Informations de base -->
+      <div class="section">
+        <h3><i class="fas fa-info-circle"></i> Informations de base</h3>
+        
+        <!-- TITRE -->
+        <div class="form-group">
+          <label for="titre">
+            <i class="fas fa-heading"></i> Titre de l'intervention *
+          </label>
+          <input 
+            id="titre" 
+            type="text" 
+            formControlName="titre" 
+            placeholder="Ex: Réparation éclairage public Rue de la Paix"
+            [class.error]="f['titre'].touched && f['titre'].invalid"
+          />
+          <div *ngIf="f['titre'].touched && f['titre'].invalid" class="error-msg">
+            <i class="fas fa-exclamation-circle"></i> Titre obligatoire (minimum 3 caractères)
+          </div>
+        </div>
+
+        <!-- TYPE -->
+        <div class="form-group">
+          <label for="type">
+            <i class="fas fa-cogs"></i> Type d'intervention *
+          </label>
+          <input 
+            id="type" 
+            type="text" 
+            formControlName="type" 
+            placeholder="Ex: ELECTRIQUE, PLOMBERIE, MECANIQUE"
+            (blur)="loadSuggestedTechniciens()"
+            [class.error]="f['type'].touched && f['type'].invalid"
+          />
+          <div class="hint">
+            <i class="fas fa-lightbulb"></i> Le type influence la suggestion des techniciens compétents
+          </div>
+          <div *ngIf="f['type'].touched && f['type'].invalid" class="error-msg">
+            <i class="fas fa-exclamation-circle"></i> Type d'intervention obligatoire
+          </div>
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="form-group">
+          <label for="description">
+            <i class="fas fa-align-left"></i> Description détaillée *
+          </label>
+          <textarea 
+            id="description" 
+            formControlName="description" 
+            rows="5"
+            placeholder="Décrivez précisément le problème, les symptômes observés, les actions déjà tentées..."
+            [class.error]="f['description'].touched && f['description'].invalid"
+          ></textarea>
+          <div class="hint">
+            <i class="fas fa-info-circle"></i> {{ f['description'].value?.length || 0 }}/500 caractères
+          </div>
+          <div *ngIf="f['description'].touched && f['description'].invalid" class="error-msg">
+            <i class="fas fa-exclamation-circle"></i> Description obligatoire (minimum 10 caractères)
+          </div>
+        </div>
+      </div>
+
+      <!-- Urgence et localisation -->
+      <div class="section">
+        <h3><i class="fas fa-map-marker-alt"></i> Localisation & Urgence</h3>
+        
+        <div class="form-row">
+          <!-- URGENCE -->
+          <div class="form-group">
+            <label for="urgence">
+              <i class="fas fa-exclamation-triangle"></i> Niveau d'urgence *
+            </label>
+            <select 
+              id="urgence" 
+              formControlName="urgence" 
+              (change)="loadSuggestedTechniciens()"
+            >
+              <option value="NORMAL">
+                <i class="fas fa-clock"></i> NORMAL (traitement sous 48h)
+              </option>
+              <option value="URGENT">
+                <i class="fas fa-bolt"></i> URGENT (traitement immédiat)
+              </option>
+            </select>
+          </div>
+
+          <!-- ÉQUIPEMENT (Recherche intelligente) -->
+          <div class="form-group equip-search-container">
+            <label for="equipement">
+              <i class="fas fa-map-pin"></i> Équipement concerné *
+            </label>
+            
+            <!-- Affichage sélectionné -->
+            <div *ngIf="selectedEquipement" class="selected-item">
+              <div class="selected-info">
+                <strong>{{ selectedEquipement.type }}</strong>
+                <span class="item-details">{{ selectedEquipement.adresse }}</span>
+                <span class="badge" [class.badge-success]="selectedEquipement.etat === 'FONCTIONNEL'" 
+                      [class.badge-danger]="selectedEquipement.etat === 'DEFECTUEUX'">
+                  {{ selectedEquipement.etat }}
+                </span>
+              </div>
+              <button type="button" class="btn-clear" (click)="clearEquipementSelection()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+
+            <!-- Recherche -->
+            <div *ngIf="!selectedEquipement" class="search-container">
+              <i class="fas fa-search search-icon"></i>
+              <input 
+                type="text" 
+                placeholder="Rechercher un équipement par type, adresse, état..."
+                [value]="equipSearchTerm"
+                (input)="onEquipSearch($event)"
+                (focus)="showEquipDropdown = true"
+              />
+              <div *ngIf="showEquipDropdown" class="dropdown">
+                <div class="dropdown-header">
+                  <span>{{ filteredEquipements.length }} équipements trouvés</span>
+                  <button type="button" class="btn-refresh" (click)="filterEquipements()">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </div>
+                
+                <div *ngIf="filteredEquipements.length === 0" class="dropdown-empty">
+                  <i class="fas fa-search"></i>
+                  <p>Aucun équipement trouvé</p>
+                </div>
+                
+                <div *ngFor="let equipement of filteredEquipements" 
+                     class="dropdown-item"
+                     (click)="selectEquipement(equipement)">
+                  <div class="item-main">
+                    <div class="item-title">{{ equipement.type }}</div>
+                    <div class="item-subtitle">{{ equipement.adresse }}</div>
+                  </div>
+                  <div class="item-meta">
+                    <span class="badge" [class.badge-success]="equipement.etat === 'FONCTIONNEL'" 
+                          [class.badge-danger]="equipement.etat === 'DEFECTUEUX'">
+                      {{ equipement.etat }}
+                    </span>
+                    <span class="distance" *ngIf="equipement.latitude && equipement.longitude">
+                      <i class="fas fa-location-dot"></i> GPS disponible
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <input type="hidden" formControlName="equipementId" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Technicien (Système intelligent) -->
+      <div class="section">
+        <h3><i class="fas fa-user-cog"></i> Affectation du technicien</h3>
+        <p class="section-description">
+          Notre système analyse automatiquement la proximité, les compétences et la disponibilité
+        </p>
+
+        <!-- Affichage sélectionné -->
+        <div *ngIf="selectedTechnicien" class="selected-technicien">
+          <div class="tech-card">
+            <div class="tech-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="tech-info">
+              <h4>{{ selectedTechnicien.prenom }} {{ selectedTechnicien.nom }}</h4>
+              <div class="tech-details">
+                <span><i class="fas fa-envelope"></i> {{ selectedTechnicien.email }}</span>
+                <span><i class="fas fa-phone"></i> {{ selectedTechnicien.numeroTelephone || 'Non renseigné' }}</span>
+                <span class="badge badge-success" *ngIf="selectedTechnicien.disponibilite">
+                  <i class="fas fa-check-circle"></i> Disponible
+                </span>
+              </div>
+            </div>
+            <div class="tech-actions">
+              <button type="button" class="btn-change" (click)="clearTechnicienSelection()">
+                <i class="fas fa-exchange-alt"></i> Changer
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recherche intelligente -->
+        <div *ngIf="!selectedTechnicien" class="tech-search-container">
+          <div class="search-header">
+            <div class="search-input-container">
+              <i class="fas fa-search search-icon"></i>
+              <input 
+                #techSearchInput
+                type="text" 
+                placeholder="Rechercher un technicien par nom, email, téléphone..."
+                [value]="techSearchTerm"
+                (input)="onTechSearch($event)"
+                (focus)="showTechDropdown = true"
+              />
+              <button type="button" class="btn-suggest" (click)="loadSuggestedTechniciens()" [disabled]="isSuggesting">
+                <i class="fas fa-magic" *ngIf="!isSuggesting"></i>
+                <i class="fas fa-spinner fa-spin" *ngIf="isSuggesting"></i>
+                {{ isSuggesting ? 'Recherche...' : 'Suggérer les meilleurs' }}
+              </button>
+            </div>
+            
+            <!-- Dans votre HTML, modifiez la section des filtres : -->
+<div class="search-filters">
+  <label class="filter-checkbox">
+    <input type="checkbox"
+           [checked]="showOnlyProches"
+           (change)="toggleProchesFilter()">
+    <i class="fas fa-location-dot"></i> Proches uniquement (&lt; 10km)
+    <span class="filter-count"
+          *ngIf="showOnlyProches && techniciensDisponibles.length > 0">
+      ({{ techniciensProchesCount }})
+    </span>
+  </label>
+
+  <label class="filter-checkbox">
+    <input type="checkbox"
+           [checked]="showOnlyCompetents"
+           (change)="toggleCompetentsFilter()">
+    <i class="fas fa-award"></i> Compétents pour ce type
+    <span class="filter-count"
+          *ngIf="showOnlyCompetents && techniciensDisponibles.length > 0">
+      ({{ techniciensCompetentsCount }})
+    </span>
+  </label>
+</div>
+
+
+<!-- Ajoutez un bouton pour réinitialiser les filtres si actifs -->
+<div *ngIf="isFilterActive()" class="active-filters">
+  <span class="active-filter" *ngIf="showOnlyProches">
+    <i class="fas fa-location-dot"></i> Proches < 10km
+    <button type="button" class="btn-remove-filter" (click)="showOnlyProches = false; filterTechniciens()">
+      <i class="fas fa-times"></i>
+    </button>
+  </span>
+  <span class="active-filter" *ngIf="showOnlyCompetents">
+    <i class="fas fa-award"></i> Compétents
+    <button type="button" class="btn-remove-filter" (click)="showOnlyCompetents = false; filterTechniciens()">
+      <i class="fas fa-times"></i>
+    </button>
+  </span>
+  <button type="button" class="btn-clear-filters" (click)="resetFilters()">
+    <i class="fas fa-times"></i> Effacer tous les filtres
+  </button>
+</div>
+          </div>
+
+          <!-- Dropdown résultats -->
+          <div *ngIf="showTechDropdown" class="tech-dropdown">
+            <div class="dropdown-header">
+              <div>
+                <span class="count">{{ filteredTechniciens.length }} techniciens disponibles</span>
+                <span *ngIf="techniciensDisponibles.length > 0" class="avg-score">
+                  Score moyen: {{ getAverageScore() }}%
+                </span>
+              </div>
+              <button type="button" class="btn-refresh" (click)="filterTechniciens()">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+
+            <!-- Chargement -->
+            <div *ngIf="isSuggesting" class="loading-techs">
+              <i class="fas fa-spinner fa-spin"></i>
+              <p>Analyse des techniciens en cours...</p>
+            </div>
+
+            <!-- Aucun résultat -->
+            <div *ngIf="!isSuggesting && filteredTechniciens.length === 0" class="no-techs">
+              <i class="fas fa-user-slash"></i>
+              <p>Aucun technicien disponible ne correspond aux critères</p>
+              <button type="button" class="btn-retry" (click)="loadSuggestedTechniciens()">
+                <i class="fas fa-redo"></i> Réessayer
+              </button>
+            </div>
+
+            <!-- Liste des techniciens -->
+            <div *ngIf="!isSuggesting && filteredTechniciens.length > 0" class="techs-list">
+              <div *ngFor="let tech of filteredTechniciens" 
+                   class="tech-item"
+                   [class.recommended]="tech.score >= 80"
+                   (click)="selectTechnicien(tech)">
+                
+                <div class="tech-item-main">
+                  <div class="tech-avatar-small">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="tech-item-info">
+                    <div class="tech-name">
+                      {{ tech.prenom }} {{ tech.nom }}
+                      <span *ngIf="tech.score >= 80" class="recommended-badge">
+                        <i class="fas fa-crown"></i> Recommandé
+                      </span>
+                    </div>
+                    <div class="tech-email">{{ tech.email }}</div>
+                    <div class="tech-stats">
+                      <span class="badge" [ngClass]="getTechnicienBadgeColor(tech.score)">
+                        <i class="fas fa-chart-line"></i> Score: {{ tech.score }}%
+                      </span>
+                      <span class="distance" *ngIf="tech.distance">
+                        <i class="fas fa-road"></i> {{ tech.distance }} km
+                      </span>
+                      <span class="competence" *ngIf="tech.competencesMatch">
+                        <i class="fas fa-check-circle"></i> Compétent
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="tech-item-actions">
+                  <button type="button" class="btn-select">
+                    <i class="fas fa-user-plus"></i> Sélectionner
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <input type="hidden" formControlName="technicienId" />
+        </div>
+
+        <!-- Informations additionnelles -->
+        <div *ngIf="selectedEquipement && !selectedTechnicien" class="suggestion-info">
+          <div class="info-card">
+            <i class="fas fa-lightbulb"></i>
+            <div>
+              <h5>Conseil d'affectation</h5>
+              <p>Pour une intervention {{ f['urgence'].value === 'URGENT' ? 'URGENTE' : 'normale' }} sur 
+                {{ selectedEquipement.type }}, privilégiez un technicien proche et compétent en 
+                {{ f['type'].value || 'ce domaine' }}.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informations administratives -->
+      <div class="section">
+        <h3><i class="fas fa-file-alt"></i> Informations administratives</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="citoyenId">
+              <i class="fas fa-user"></i> ID Citoyen *
+            </label>
+            <input 
+              id="citoyenId" 
+              type="text" 
+              formControlName="citoyenId" 
+              placeholder="Identifiant du citoyen"
+              [class.error]="f['citoyenId'].touched && f['citoyenId'].invalid"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="serviceMunicipalId">
+              <i class="fas fa-building"></i> ID Service Municipal *
+            </label>
+            <input 
+              id="serviceMunicipalId" 
+              type="text" 
+              formControlName="serviceMunicipalId" 
+              placeholder="Identifiant du service"
+              [class.error]="f['serviceMunicipalId'].touched && f['serviceMunicipalId'].invalid"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dateDebut">
+              <i class="fas fa-calendar-plus"></i> Date de début prévue
+            </label>
+            <input 
+              id="dateDebut" 
+              type="datetime-local" 
+              formControlName="dateDebut"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="dateFin">
+              <i class="fas fa-calendar-check"></i> Date de fin prévue
+            </label>
+            <input 
+              id="dateFin" 
+              type="datetime-local" 
+              formControlName="dateFin"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" routerLink="/admin/interventions">
+          <i class="fas fa-times"></i> Annuler
+        </button>
+        <button type="submit" class="btn-submit" [disabled]="isLoading || interventionForm.invalid">
+          <i class="fas fa-check" *ngIf="!isLoading"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="isLoading"></i>
+          {{ isLoading ? 'Création en cours...' : 'Créer l\'intervention' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

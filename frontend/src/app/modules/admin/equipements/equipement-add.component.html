@@ -1,0 +1,90 @@
+<app-admin-navbar></app-admin-navbar>
+<div class="add-equipement-container">
+  <h2>Ajouter un nouvel équipement</h2>
+
+  <form (ngSubmit)="onSubmit()" #equipementForm="ngForm">
+    <div class="form-group">
+      <label for="type">Type d'équipement *</label>
+      <input
+        type="text"
+        id="type"
+        name="type"
+        [(ngModel)]="equipement.type"
+        required
+        placeholder="Ex: Lampe LED, Caméra, Capteur..."
+        class="form-control"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="adresse">Adresse *</label>
+      <input
+        type="text"
+        id="adresse"
+        name="adresse"
+        [(ngModel)]="equipement.adresse"
+        required
+        placeholder="Adresse complète"
+        class="form-control"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="etat">État *</label>
+      <select
+        id="etat"
+        name="etat"
+        [(ngModel)]="equipement.etat"
+        required
+        class="form-control"
+      >
+        <option value="FONCTIONNEL">Fonctionnel</option>
+        <option value="DEFECTUEUX">Défectueux</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Coordonnées géographiques</label>
+      <div class="coordinates-group">
+        <div>
+          <label for="longitude">Longitude</label>
+          <input
+            type="number"
+            id="longitude"
+            name="longitude"
+            [(ngModel)]="equipement.localisation.coordinates[0]"
+            step="any"
+            class="form-control"
+            placeholder="Longitude"
+          >
+        </div>
+        <div>
+          <label for="latitude">Latitude</label>
+          <input
+            type="number"
+            id="latitude"
+            name="latitude"
+            [(ngModel)]="equipement.localisation.coordinates[1]"
+            step="any"
+            class="form-control"
+            placeholder="Latitude"
+          >
+        </div>
+      </div>
+      <small class="text-muted">Les coordonnées sont facultatives</small>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <div class="form-actions">
+      <button type="button" (click)="onCancel()" class="btn btn-secondary">
+        Annuler
+      </button>
+      <button type="submit" [disabled]="isLoading" class="btn btn-primary">
+        {{ isLoading ? 'Création en cours...' : 'Créer l\'équipement' }}
+      </button>
+    </div>
+  </form>
+</div>

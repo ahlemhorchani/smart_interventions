@@ -1,0 +1,149 @@
+<!-- statistiques.component.html -->
+<app-admin-navbar></app-admin-navbar>
+
+<!-- Header optionnel (si vous voulez le même style que les autres pages) -->
+<div class="statistiques-header">
+  <div class="header-content">
+    <div class="page-title">
+      <div class="page-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="page-title-text">
+        <h1>Statistiques Avancées</h1>
+        <span class="page-subtitle">
+          Analyse complète des performances et indicateurs clés
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="statistiques-container">
+  <!-- État de chargement -->
+  <div class="loading-state" *ngIf="loading">
+    <i class="fas fa-spinner"></i>
+    <h3>Chargement des statistiques...</h3>
+    <p>Veuillez patienter pendant que nous récupérons les données.</p>
+  </div>
+
+  <!-- État d'erreur -->
+  <div class="error-state" *ngIf="error && !loading">
+    <i class="fas fa-exclamation-circle"></i>
+    <h3>Erreur de chargement</h3>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="ngOnInit()">
+      <i class="fas fa-redo"></i>
+      Réessayer
+    </button>
+  </div>
+
+  <!-- Contenu principal -->
+  <div *ngIf="stats && !loading">
+    <!-- KPI Principaux -->
+    <div class="stats-kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="kpi-title">
+            <h3>Taux de Résolution</h3>
+          </div>
+        </div>
+        <div class="kpi-value">
+          {{ (stats.tauxResolution * 100) | number:'1.0-2' }}%
+        </div>
+        <div class="kpi-trend positive">
+          <i class="fas fa-arrow-up"></i>
+          <span>+2.5% vs mois dernier</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="kpi-title">
+            <h3>Temps Moyen</h3>
+          </div>
+        </div>
+        <div class="kpi-value">
+          {{ stats.tempsMoyenIntervention | number:'1.1-2' }}h
+        </div>
+        <div class="kpi-trend negative">
+          <i class="fas fa-arrow-down"></i>
+          <span>-0.8h vs mois dernier</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon">
+            <i class="fas fa-smile"></i>
+          </div>
+          <div class="kpi-title">
+            <h3>Satisfaction</h3>
+          </div>
+        </div>
+        <div class="kpi-value">
+          {{ (stats.tauxSatisfactionCitoyens * 100) | number:'1.0-2' }}%
+        </div>
+        <div class="kpi-trend positive">
+          <i class="fas fa-arrow-up"></i>
+          <span>+3.2% vs mois dernier</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sections détaillées -->
+    <div class="stats-sections-grid">
+      <!-- Interventions par service -->
+      <div class="stat-section">
+        <h3>
+          <i class="fas fa-building"></i>
+          Interventions par Service
+        </h3>
+        <div class="stats-list">
+          <div *ngFor="let service of stats.nbInterventionsParService | keyvalue" class="stat-item">
+            <span class="stat-label">{{ service.key }}</span>
+            <span class="stat-value">{{ service.value }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance des techniciens -->
+      <div class="stat-section">
+        <h3>
+          <i class="fas fa-users"></i>
+          Performance des Techniciens
+        </h3>
+        <div class="stats-list">
+          <div *ngFor="let tech of stats.performanceTechniciens | keyvalue" class="performance-item">
+            <div class="performance-header">
+              <span class="technicien-name">{{ tech.key }}</span>
+              <span class="performance-score">{{ tech.value }} interventions</span>
+            </div>
+            <div class="performance-bar">
+              <div class="performance-fill" [style.width]="(tech.value / getMaxTechPerformance()) * 100 + '%'"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zones problématiques -->
+      <div class="stat-section">
+        <h3>
+          <i class="fas fa-map-marker-alt"></i>
+          Zones Problématiques
+        </h3>
+        <div class="stats-list">
+          <div *ngFor="let zone of stats.topZonesProblemes; let i = index" class="zone-item">
+            <div class="zone-rank">{{ i + 1 }}</div>
+            <div class="zone-name">{{ zone }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

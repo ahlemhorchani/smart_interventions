@@ -1,0 +1,136 @@
+<div class="map-page">
+  <!-- Header de la carte -->
+  <div class="map-header">
+    <div class="header-content">
+      <h1>
+        <i class="fas fa-map-marked-alt"></i>
+        Carte Interactive des Interventions
+      </h1>
+      <p>Visualisez les interventions en cours et signalez un problème</p>
+    </div>
+    
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="enableLocationSelection()" *ngIf="!isSelectingLocation">
+        <i class="fas fa-map-marker-alt"></i> Signaler à cet endroit
+      </button>
+      
+      <div class="selection-mode" *ngIf="isSelectingLocation">
+        <span class="selection-text">
+          <i class="fas fa-hand-pointer"></i> Cliquez sur la carte pour sélectionner l'emplacement
+        </span>
+        <button class="btn btn-success" (click)="confirmLocation()" [disabled]="!selectedLocation">
+          <i class="fas fa-check"></i> Confirmer cet emplacement
+        </button>
+        <button class="btn btn-outline" (click)="cancelLocationSelection()">
+          <i class="fas fa-times"></i> Annuler
+        </button>
+      </div>
+      
+      <a routerLink="/citoyen/signalement" class="btn btn-outline">
+        <i class="fas fa-plus-circle"></i> Nouveau signalement
+      </a>
+    </div>
+  </div>
+
+  <!-- Conteneur de la carte -->
+  <div class="map-wrapper">
+    <!-- Sidebar des statistiques -->
+    <div class="map-sidebar" [class.collapsed]="!sidebarVisible">
+      <div class="sidebar-header">
+        <h3><i class="fas fa-chart-bar"></i> Statistiques</h3>
+        <button class="toggle-sidebar" (click)="toggleSidebar()">
+          <i class="fas" [class.fa-chevron-left]="sidebarVisible" [class.fa-chevron-right]="!sidebarVisible"></i>
+        </button>
+      </div>
+      
+      <div class="stats-grid" *ngIf="sidebarVisible">
+        <div class="stat-card">
+          <div class="stat-icon urgent">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="stat-info">
+            <h4>{{ getUrgentIncidents() }}</h4>
+            <p>Urgents</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon pending">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-info">
+            <h4>{{ getPendingIncidents() }}</h4>
+            <p>En attente</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon resolved">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h4>{{ getResolvedToday() }}</h4>
+            <p>Résolus aujourd'hui</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon technicians">
+            <i class="fas fa-hard-hat"></i>
+          </div>
+          <div class="stat-info">
+            <h4>{{ getActiveTechnicians() }}</h4>
+            <p>Techniciens actifs</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Liste des incidents -->
+      <div class="incidents-list" *ngIf="sidebarVisible">
+        <h4><i class="fas fa-list"></i> Derniers signalements</h4>
+        <div class="incident-item" *ngFor="let incident of incidents.slice(0, 5)">
+          <div class="incident-type">
+            <i class="fas" [ngClass]="getIncidentTypeIcon(incident.type)"></i>
+            <span>{{ getIncidentTypeLabel(incident.type) }}</span>
+          </div>
+          <div class="incident-status" [ngClass]="incident.status.toLowerCase()">
+            {{ getStatusLabel(incident.status) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- La carte Leaflet -->
+    <div #mapContainer class="map" [class.loading]="loading"></div>
+
+    <!-- Contrôles de la carte -->
+    <div class="map-controls">
+      <button class="control-btn" (click)="zoomToUser()" title="Ma position">
+        <i class="fas fa-location-crosshairs"></i>
+      </button>
+      <button class="control-btn" (click)="zoomToIncidents()" title="Voir tous les incidents">
+        <i class="fas fa-search"></i>
+      </button>
+      <button class="control-btn" (click)="toggleLayer('incidents')" 
+              [class.active]="activeLayers.incidents" title="Afficher/masquer les incidents">
+        <i class="fas fa-exclamation-circle"></i>
+      </button>
+      <button class="control-btn" (click)="toggleLayer('technicians')" 
+              [class.active]="activeLayers.technicians" title="Afficher/masquer les techniciens">
+        <i class="fas fa-hard-hat"></i>
+      </button>
+      <!-- ⭐ AJOUTER TEMPORAIREMENT POUR DÉBOGUER -->
+<button (click)="testButtons()" 
+        style="position: absolute; top: 100px; left: 100px; z-index: 1000; background: red; color: white;">
+  Debug
+</button>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="error-message">
+      <i class="fas fa-exclamation-circle"></i>
+      {{ error }}
+      <button class="retry-btn" (click)="loadMapData()">Réessayer</button>
+    </div>
+  </div>
+</div>

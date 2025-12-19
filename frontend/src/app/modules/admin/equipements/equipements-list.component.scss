@@ -1,0 +1,680 @@
+// ============================================
+// EQUIPEMENTS LIST PREMIUM STYLES
+// ============================================
+@use "sass:color";
+
+$primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$secondary: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+$accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+$warning: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+$dark: #1a1a2e;
+$light: #f8f9ff;
+$success: #00b894;
+$danger: #ff7675;
+$primary-color: #667eea; // Variable ajoutée
+
+$shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-md: 0 10px 25px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.15);
+$shadow-xl: 0 25px 60px rgba(0, 0, 0, 0.2);
+
+$radius-sm: 12px;
+$radius-md: 20px;
+$radius-lg: 30px;
+$radius-xl: 40px;
+
+$transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+$transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: $shadow-md;
+}
+
+@mixin gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+// ============================================
+// CONTAINER PRINCIPAL
+// ============================================
+.equipements-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 30px;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #667eea, transparent);
+  }
+}
+
+// ============================================
+// HEADER
+// ============================================
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  animation: slideInLeft 0.8s ease-out;
+  
+  h2 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    background: $primary;
+    @include gradient-text;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100px;
+      height: 4px;
+      background: $primary;
+      border-radius: 2px;
+    }
+  }
+}
+
+.btn-add {
+  @include glass-effect;
+  padding: 18px 35px;
+  background: $secondary;
+  color: white;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: $transition;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: $shadow-lg;
+    
+    &::before {
+      left: 100%;
+    }
+    
+    i {
+      transform: rotate(90deg) scale(1.2);
+    }
+  }
+  
+  i {
+    font-size: 18px;
+    transition: $transition;
+  }
+}
+
+// ============================================
+// FILTRES
+// ============================================
+.filters {
+  @include glass-effect;
+  padding: 30px;
+  border-radius: $radius-lg;
+  margin-bottom: 40px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  animation: slideInRight 0.8s ease-out 0.2s both;
+  
+  input, select {
+    flex: 1;
+    padding: 18px 25px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    border-radius: $radius-sm;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: $transition-fast;
+    
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    &::placeholder {
+      color: #a0aec0;
+    }
+  }
+  
+  input {
+    background: rgba(255, 255, 255, 0.95);
+  }
+  
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 20px;
+    padding-right: 60px;
+  }
+  
+  button.filter-btn {
+    @include glass-effect;
+    padding: 18px 35px;
+    background: $primary;
+    color: white;
+    border: none;
+    border-radius: $radius-md;
+    font-weight: 700;
+    cursor: pointer;
+    transition: $transition;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: $shadow-lg;
+    }
+  }
+}
+
+// ============================================
+// INDICATEUR DE FILTRES
+// ============================================
+.filter-info {
+  @include glass-effect;
+  padding: 15px 25px;
+  border-radius: $radius-md;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: slideInLeft 0.5s ease-out;
+  border-left: 4px solid $primary-color;
+  
+  i {
+    color: $primary-color;
+    margin-right: 10px;
+  }
+  
+  .clear-filter-btn {
+    background: transparent;
+    color: #f5576c;
+    border: 1px solid rgba(245, 87, 108, 0.3);
+    padding: 8px 15px;
+    border-radius: $radius-sm;
+    font-size: 14px;
+    cursor: pointer;
+    transition: $transition-fast;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    
+    &:hover {
+      background: rgba(245, 87, 108, 0.1);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// ============================================
+// AUCUNE DONNÉE
+// ============================================
+.no-data {
+  @include glass-effect;
+  padding: 80px 40px;
+  text-align: center;
+  border-radius: $radius-lg;
+  margin-top: 40px;
+  animation: scaleIn 0.8s ease-out;
+  
+  i {
+    font-size: 60px;
+    color: #a0aec0;
+    margin-bottom: 20px;
+  }
+  
+  h3 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #2d3748;
+  }
+  
+  p {
+    color: #718096;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+  }
+  
+  .btn-add {
+    margin: 0 auto;
+  }
+}
+
+// ============================================
+// TABLE PREMIUM
+// ============================================
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 40px;
+  background: white;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-xl;
+  animation: slideInLeft 0.8s ease-out 0.4s both;
+  
+  thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+    tr {
+      th {
+        padding: 25px 30px;
+        text-align: left;
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        
+        &:not(:last-child)::after {
+          content: '';
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          height: 60%;
+          width: 1px;
+          background: rgba(255, 255, 255, 0.2);
+        }
+        
+        &:first-child {
+          border-top-left-radius: $radius-lg;
+        }
+        
+        &:last-child {
+          border-top-right-radius: $radius-lg;
+        }
+      }
+    }
+  }
+  
+  tbody {
+    tr {
+      border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+      transition: $transition-fast;
+      
+      &:hover {
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.05), transparent);
+        transform: translateX(10px);
+        
+        td {
+          color: #667eea;
+          
+          .etat-badge {
+            transform: scale(1.1);
+          }
+          
+          .btn-modify, .btn-delete {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      }
+      
+      &:last-child {
+        border-bottom: none;
+        
+        td {
+          &:first-child {
+            border-bottom-left-radius: $radius-lg;
+          }
+          
+          &:last-child {
+            border-bottom-right-radius: $radius-lg;
+          }
+        }
+      }
+      
+      td {
+        padding: 25px 30px;
+        color: #4a5568;
+        font-size: 15px;
+        transition: $transition-fast;
+        border-bottom: 1px solid rgba(102, 126, 234, 0.05);
+        
+        ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          max-height: 200px;
+          overflow-y: auto;
+          
+          &::-webkit-scrollbar {
+            width: 6px;
+          }
+          
+          &::-webkit-scrollbar-track {
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 3px;
+          }
+          
+          &::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 3px;
+          }
+          
+          li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            
+            &:last-child {
+              border-bottom: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// BADGES & BOUTONS
+// ============================================
+.etat-badge {
+  display: inline-block;
+  padding: 10px 25px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: $transition;
+  box-shadow: $shadow-sm;
+  
+  &.fonctionnel {
+    background: $secondary;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    &:hover::before {
+      left: 100%;
+    }
+  }
+  
+  &.defectueux {
+    background: $accent;
+    color: white;
+    animation: pulse-glow 2s infinite;
+  }
+}
+
+.btn-modify, .btn-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 25px;
+  border: none;
+  border-radius: $radius-sm;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: $transition;
+  margin-right: 10px;
+  opacity: 0.9;
+  transform: translateX(-10px);
+  
+  i {
+    font-size: 16px;
+    transition: $transition;
+  }
+  
+  &:hover {
+    transform: translateY(-5px) scale(1.05);
+    
+    i {
+      transform: rotate(20deg);
+    }
+  }
+}
+
+.btn-modify {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(17, 153, 142, 0.3);
+  
+  &:hover {
+    box-shadow: 0 12px 35px rgba(17, 153, 142, 0.5);
+  }
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);
+  
+  &:hover {
+    box-shadow: 0 12px 35px rgba(245, 87, 108, 0.5);
+  }
+}
+
+// ============================================
+// ANIMATIONS
+// ============================================
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3); }
+  50% { box-shadow: 0 8px 30px rgba(245, 87, 108, 0.6); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ============================================
+// ÉTAT DE CHARGEMENT
+// ============================================
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  
+  .loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(102, 126, 234, 0.2);
+    border-radius: 50%;
+    border-top-color: #667eea;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+  
+  p {
+    color: #718096;
+    font-size: 1.1rem;
+  }
+}
+
+// ============================================
+// DESIGN RESPONSIVE
+// ============================================
+@media (max-width: 1200px) {
+  .equipements-container {
+    padding: 30px 20px;
+  }
+  
+  .header {
+    h2 {
+      font-size: 2.3rem;
+    }
+  }
+  
+  table {
+    thead tr th,
+    tbody tr td {
+      padding: 20px;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+    
+    .btn-add {
+      align-self: flex-start;
+    }
+  }
+  
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+    
+    input, select, button {
+      width: 100%;
+    }
+  }
+  
+  table {
+    display: block;
+    overflow-x: auto;
+    
+    tbody tr {
+      &:hover {
+        transform: translateX(5px);
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    h2 {
+      font-size: 1.8rem;
+      
+      &::after {
+        width: 70px;
+      }
+    }
+  }
+  
+  .btn-add, .btn-modify, .btn-delete {
+    padding: 14px 20px;
+    font-size: 13px;
+  }
+  
+  .etat-badge {
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+  
+  table {
+    thead tr th,
+    tbody tr td {
+      padding: 15px;
+      font-size: 13px;
+    }
+  }
+  
+  .btn-modify, .btn-delete {
+    margin-bottom: 10px;
+    margin-right: 0;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .equipements-container {
+    padding: 20px 15px;
+  }
+  
+  .header {
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  .btn-add {
+    padding: 12px 18px;
+    font-size: 12px;
+    
+    i {
+      font-size: 14px;
+    }
+  }
+}

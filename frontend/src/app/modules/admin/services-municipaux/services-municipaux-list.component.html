@@ -1,0 +1,145 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="services-container">
+  <!-- En-tête -->
+  <div class="header">
+    <h2>Services Municipaux</h2>
+    <button routerLink="/admin/services-municipaux/new" class="btn-add">
+      <i class="fas fa-plus-circle"></i> Nouveau Service
+    </button>
+  </div>
+
+  <!-- Filtres et recherche -->
+  <div class="filters">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input 
+        type="text" 
+        placeholder="Rechercher par nom, description ou intervention..." 
+        [(ngModel)]="searchTerm"
+        (input)="onSearchInput($event)"
+      >
+      <button *ngIf="searchTerm" (click)="clearSearch()" class="clear-search">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Indicateur de recherche -->
+  <div *ngIf="searchTerm" class="filter-info">
+    <i class="fas fa-filter"></i>
+    {{ filteredServices.length }} service(s) trouvé(s) sur {{ services.length }}
+    <button (click)="clearSearch()" class="clear-filter-btn">
+      <i class="fas fa-times"></i> Effacer
+    </button>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Chargement des services...</p>
+  </div>
+
+  <!-- Aucun résultat -->
+  <div *ngIf="!isLoading && filteredServices.length === 0" class="no-data">
+    <i class="fas fa-building"></i>
+    <h3>Aucun service municipal trouvé</h3>
+    <p *ngIf="searchTerm">Essayez de modifier vos critères de recherche</p>
+    <button routerLink="/admin/services-municipaux/new" class="btn-add">
+      <i class="fas fa-plus-circle"></i> Créer un service
+    </button>
+  </div>
+
+  <!-- Tableau des services -->
+  <div *ngIf="!isLoading && filteredServices.length > 0" class="services-grid">
+    <div *ngFor="let service of filteredServices" class="service-card">
+      <div class="service-header">
+        <div class="service-icon">
+          <i class="fas fa-building"></i>
+        </div>
+        <div class="service-title">
+          <h3>{{ service.nom }}</h3>
+          <span class="service-date">
+            <i class="fas fa-calendar"></i>
+            {{ service.dateCreation | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+        <div class="service-actions">
+          <button 
+            [routerLink]="['/admin/services-municipaux', service.id, 'edit']" 
+            class="btn-action edit">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button (click)="deleteService(service.id!)" class="btn-action delete">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="service-body">
+        <p class="service-description">{{ service.description || 'Pas de description' }}</p>
+        
+        <!-- Statistiques interventions -->
+        <div class="interventions-stats">
+          <div class="stat-item">
+            <div class="stat-number">{{ getInterventionStats(service).total }}</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ getInterventionStats(service).enCours }}</div>
+            <div class="stat-label">En cours</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ getInterventionStats(service).termine }}</div>
+            <div class="stat-label">Terminées</div>
+          </div>
+        </div>
+
+        <!-- Liste des interventions récentes -->
+        <div class="interventions-list" *ngIf="service.interventionsRecent && service.interventionsRecent.length > 0">
+          <h4>Interventions récentes</h4>
+          <div *ngFor="let inter of service.interventionsRecent.slice(0, 3)" 
+               class="intervention-item">
+            <div class="intervention-header">
+              <span class="intervention-title">{{ inter.titre }}</span>
+              <span class="status-badge" [class]="inter.statut.toLowerCase()">
+                {{ inter.statut }}
+              </span>
+            </div>
+            <div class="intervention-details">
+              <span class="urgence" [class]="inter.urgence.toLowerCase()">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ inter.urgence }}
+              </span>
+              <span class="date">
+                <i class="fas fa-clock"></i>
+                {{ inter.dateCreation | date:'dd/MM/yy' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aucune intervention -->
+        <div *ngIf="!service.interventionsRecent || service.interventionsRecent.length === 0" 
+             class="no-interventions">
+          <i class="fas fa-info-circle"></i>
+          <span>Aucune intervention récente</span>
+        </div>
+      </div>
+
+      <!-- Actions du service -->
+      <div class="service-footer">
+        <button 
+          [routerLink]="['/admin/services-municipaux', service.id, 'interventions', 'add']" 
+          class="btn-outline">
+          <i class="fas fa-plus"></i> Ajouter intervention
+        </button>
+        <button 
+          [routerLink]="['/admin/services-municipaux', service.id]" 
+          class="btn-primary">
+          <i class="fas fa-eye"></i> Détails
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

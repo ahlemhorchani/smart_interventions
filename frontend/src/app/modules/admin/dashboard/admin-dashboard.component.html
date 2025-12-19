@@ -1,0 +1,477 @@
+<!-- admin-dashboard.component.html -->
+<div class="admin-dashboard-container">
+  <!-- En-tête avec background animé -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-title">
+        <div class="header-icon">
+          <i class="fas fa-cogs"></i>
+        </div>
+        <div class="header-text">
+          <h1 class="dashboard-title">
+            Tableau de bord Administrateur
+            <span class="dashboard-subtitle">
+              Gestion complète des interventions urbaines
+            </span>
+          </h1>
+          <div class="header-info">
+            <div class="info-badge">
+              <i class="fas fa-clock me-1"></i>
+              {{ currentDate | date:'dd/MM/yyyy HH:mm' }}
+            </div>
+            <button class="btn-refresh" (click)="refreshDashboard()" [disabled]="loading">
+              <i class="fas fa-sync-alt" [class.spin]="loading"></i>
+              {{ loading ? 'Actualisation...' : 'Actualiser' }}
+            </button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div class="dashboard-main">
+     <section class="urgent-alerts" *ngIf="stats.signalementsEnAttente > 0">
+      <div class="alert-card">
+        <div class="alert-icon">
+          <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="alert-content">
+          <h3>Action requise !</h3>
+          <p>Il y a <strong>{{ stats.signalementsEnAttente }}</strong> signalements non traités qui nécessitent votre attention immédiate.</p>
+        </div>
+        <div class="alert-actions">
+          <a routerLink="/admin/signalements" class="btn-alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            Traiter maintenant
+          </a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Cartes d'accès rapide (AU-DESSUS des statistiques) -->
+    <section class="quick-actions-section">
+      <div class="section-header">
+        <div class="section-title">
+          <i class="fas fa-bolt"></i>
+          <h2>Accès rapide</h2>
+        </div>
+      </div>
+      
+      <div class="quick-actions-grid">
+        <a routerLink="/admin/interventions/nouvelle" class="quick-action-card">
+          <div class="quick-action-icon">
+            <i class="fas fa-plus-circle"></i>
+          </div>
+          <div class="quick-action-content">
+            <h3>Nouvelle intervention</h3>
+            <p>Créer une nouvelle intervention</p>
+          </div>
+          <div class="quick-action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+        
+        <a routerLink="/admin/interventions" class="quick-action-card">
+          <div class="quick-action-icon">
+            <i class="fas fa-list-check"></i>
+          </div>
+          <div class="quick-action-content">
+            <h3>Lister interventions</h3>
+            <p>Voir et gérer toutes les interventions</p>
+          </div>
+          <div class="quick-action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+       
+        <a routerLink="/admin/equipements" class="quick-action-card">
+          <div class="quick-action-icon">
+            <i class="fas fa-gear"></i>
+          </div>
+          <div class="quick-action-content">
+            <h3>Gérer équipements</h3>
+            <p>Voir et modifier les équipements</p>
+          </div>
+          <div class="quick-action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+        
+        <a routerLink="/admin/services-municipaux" class="quick-action-card">
+          <div class="quick-action-icon">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="quick-action-content">
+            <h3>Services municipaux</h3>
+            <p>Gérer les services</p>
+          </div>
+          <div class="quick-action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+        
+        <a routerLink="/admin/statistiques" class="quick-action-card">
+          <div class="quick-action-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="quick-action-content">
+            <h3>Statistiques</h3>
+            <p>Voir les statistiques détaillées</p>
+          </div>
+          <div class="quick-action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+
+        <a routerLink="/admin/signalements" class="quick-action-card">
+          <div class="quick-action-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="quick-action-content">
+            <h3>Signalements</h3>
+            <p>Consulter les signalements reçus</p>
+          </div>
+          <div class="quick-action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+        
+        <a routerLink="/admin/techniciens" class="quick-action-card">
+          <div class="quick-action-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="quick-action-content">
+            <h3>Techniciens</h3>
+            <p>Gérer les techniciens disponibles</p>
+          </div>
+          <div class="quick-action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Cartes de statistiques -->
+    <div class="stats-cards">
+      <div class="stats-header">
+        <div class="section-title">
+          <i class="fas fa-chart-line"></i>
+          <h2>Statistiques en temps réel</h2>
+        </div>
+      </div>
+      
+      <div class="stats-grid">
+        <!-- Signalements -->
+        <div class="stat-card" data-color="primary">
+          <div class="stat-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ stats.totalSignalements }}</div>
+            <div class="stat-label">Signalements totaux</div>
+            <div class="stat-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width]="getProgressPercentage(stats.signalementsEnAttente, stats.totalSignalements) + '%'">
+                </div>
+              </div>
+              <div class="stat-detail">{{ stats.signalementsEnAttente }} en attente</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interventions -->
+        <div class="stat-card" data-color="info">
+          <div class="stat-icon">
+            <i class="fas fa-tools"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ stats.interventionsEnCours }}</div>
+            <div class="stat-label">Interventions en cours</div>
+            <div class="stat-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width]="getProgressPercentage(stats.interventionsEnCours, stats.totalSignalements) + '%'">
+                </div>
+              </div>
+              <div class="stat-detail">Dernières 24h</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Équipements -->
+        <div class="stat-card" data-color="warning">
+          <div class="stat-icon">
+            <i class="fas fa-gear"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ stats.equipementsDefectueux }}</div>
+            <div class="stat-label">Équipements défectueux</div>
+            <div class="stat-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width]="getProgressPercentage(stats.equipementsDefectueux, 100) + '%'">
+                </div>
+              </div>
+              <div class="stat-detail">Nécessitent attention</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Techniciens -->
+        <div class="stat-card" data-color="success">
+          <div class="stat-icon">
+            <i class="fas fa-user-check"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ stats.techniciensDisponibles }}</div>
+            <div class="stat-label">Techniciens disponibles</div>
+            <div class="stat-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width]="getProgressPercentage(stats.techniciensDisponibles, 20) + '%'">
+                </div>
+              </div>
+              <div class="stat-detail">Prêts à intervenir</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Services -->
+        <div class="stat-card" data-color="secondary">
+          <div class="stat-icon">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ servicesMunicipaux.length }}</div>
+            <div class="stat-label">Services municipaux</div>
+            <div class="stat-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width]="getProgressPercentage(servicesMunicipaux.length, 10) + '%'">
+                </div>
+              </div>
+              <div class="stat-detail">Actifs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Taux de résolution -->
+        <div class="stat-card" data-color="danger">
+          <div class="stat-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ stats.tauxResolution }}%</div>
+            <div class="stat-label">Taux de résolution</div>
+            <div class="stat-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width]="stats.tauxResolution + '%'">
+                </div>
+              </div>
+              <div class="stat-detail">Performance globale</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alertes urgentes (si signalements en attente) -->
+   
+
+    <!-- Grille principale -->
+    <div class="dashboard-grid">
+      <!-- Section gauche : Interventions récentes -->
+      <div class="main-left">
+        <!-- Interventions récentes -->
+        <section class="dashboard-section">
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-tools"></i>
+              <h2>Interventions récentes</h2>
+              <span class="section-badge" *ngIf="recentInterventions.length > 0">
+                {{ recentInterventions.length }} interventions
+              </span>
+            </div>
+            <div class="section-actions">
+              <a routerLink="/admin/interventions" class="btn-section">
+                Voir tout
+              </a>
+              <a routerLink="/admin/interventions/nouvelle" class="btn-section primary">
+                <i class="fas fa-plus"></i>
+                Nouvelle
+              </a>
+            </div>
+          </div>
+          
+          <div class="interventions-list">
+            <div *ngIf="recentInterventions.length === 0" class="empty-state">
+              <i class="fas fa-info-circle"></i>
+              <p>Aucune intervention récente</p>
+            </div>
+            
+            <div *ngFor="let intervention of recentInterventions" 
+                 class="intervention-item"
+                 [routerLink]="['/admin/interventions', intervention.id]">
+              <div class="intervention-main">
+                <div class="intervention-title">
+                  <h3>{{ intervention.titre }}</h3>
+                  <div class="intervention-meta">
+                    <span class="intervention-type">{{ intervention.type }}</span>
+                    <span class="intervention-date">
+                      <i class="fas fa-clock"></i>
+                      {{ intervention.dateCreation | date:'dd/MM HH:mm' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="intervention-status">
+                  <span class="status-badge" [class]="getStatutColor(intervention.statut)">
+                    {{ intervention.statut }}
+                  </span>
+                  <span class="urgence-badge" [class]="getUrgenceColor(intervention.urgence)">
+                    {{ intervention.urgence }}
+                  </span>
+                </div>
+              </div>
+              <p class="intervention-desc">{{ intervention.description | slice:0:100 }}...</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Section droite : Équipements et Techniciens -->
+      <div class="main-right">
+        <!-- Équipements défectueux -->
+        <section class="dashboard-section">
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-exclamation-octagon"></i>
+              <h2>Équipements défectueux</h2>
+              <span class="section-badge danger" *ngIf="defectEquipements.length > 0">
+                {{ defectEquipements.length }} défectueux
+              </span>
+            </div>
+            <div class="section-actions">
+              <a routerLink="/admin/equipements" class="btn-section">
+                Voir tout
+              </a>
+            </div>
+          </div>
+          
+          <div class="equipements-list">
+            <div *ngIf="defectEquipements.length === 0" class="empty-state">
+              <i class="fas fa-check-circle success"></i>
+              <p>Tous les équipements sont fonctionnels</p>
+            </div>
+            
+            <div *ngFor="let equipement of defectEquipements" class="equipement-item">
+              <div class="equipement-icon">
+                <i class="fas fa-gear"></i>
+              </div>
+              <div class="equipement-details">
+                <h3>{{ equipement.type }}</h3>
+                <p class="equipement-location">
+                  <i class="fas fa-map-marker-alt"></i>
+                  {{ equipement.adresse | slice:0:40 }}...
+                </p>
+                <div class="equipement-meta">
+                  <span class="meta-item">
+                    <i class="fas fa-history"></i>
+                    {{ getLastInterventionDate(equipement) }}
+                  </span>
+                </div>
+              </div>
+              <div class="equipement-status">
+                <span class="status-badge danger">Défectueux</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Techniciens disponibles -->
+        <section class="dashboard-section">
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-users"></i>
+              <h2>Techniciens disponibles</h2>
+              <span class="section-badge success" *ngIf="activeTechniciens.length > 0">
+                {{ activeTechniciens.length }} disponibles
+              </span>
+            </div>
+            <div class="section-actions">
+              <a routerLink="/admin/techniciens" class="btn-section">
+                Gérer
+              </a>
+            </div>
+          </div>
+          
+          <div class="techniciens-list">
+            <div *ngIf="activeTechniciens.length === 0" class="empty-state">
+              <i class="fas fa-user-slash warning"></i>
+              <p>Aucun technicien disponible</p>
+            </div>
+            
+            <div *ngFor="let tech of activeTechniciens" class="technicien-item">
+              <div class="technicien-avatar">
+                {{ tech.prenom.charAt(0) }}{{ tech.nom.charAt(0) }}
+              </div>
+              <div class="technicien-info">
+                <h3>{{ tech.prenom }} {{ tech.nom }}</h3>
+                <p class="technicien-email">
+                  <i class="fas fa-envelope"></i>
+                  {{ tech.email }}
+                </p>
+                <p class="technicien-phone" *ngIf="tech.numeroTelephone">
+                  <i class="fas fa-phone"></i>
+                  {{ tech.numeroTelephone }}
+                </p>
+              </div>
+              <div class="technicien-status">
+                <span class="status-badge success">
+                  <i class="fas fa-check-circle"></i>
+                  Disponible
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pied de page du dashboard -->
+  <div class="dashboard-footer">
+    <div class="footer-content">
+      <div class="footer-stats">
+        <div class="footer-stat">
+          <i class="fas fa-server"></i>
+          <div>
+            <strong>System Status</strong>
+            <span class="status-online">All Systems Operational</span>
+          </div>
+        </div>
+        <div class="footer-stat">
+          <i class="fas fa-shield-alt"></i>
+          <div>
+            <strong>Security Level</strong>
+            <span>High Protection</span>
+          </div>
+        </div>
+        <div class="footer-stat">
+          <i class="fas fa-history"></i>
+          <div>
+            <strong>Last Update</strong>
+            <span>{{ currentDate | date:'HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <p>&copy; 2025 Smart Interventions Admin Dashboard v2.0</p>
+        <p class="footer-version">Powered by Smart City Technology</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,147 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="details-container">
+  <!-- En-tête -->
+  <div class="details-header">
+    <div class="header-content">
+      <button routerLink="/admin/services-municipaux" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Retour à la liste
+      </button>
+      <h1>
+        <i class="fas fa-info-circle"></i>
+        Détails du Service Municipal
+      </h1>
+    </div>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Chargement des détails...</p>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="errorMessage && !isLoading" class="error-state">
+    <div class="error-icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <p>{{ errorMessage }}</p>
+    <button routerLink="/admin/services-municipaux" class="btn-back">
+      <i class="fas fa-arrow-left"></i> Retour à la liste
+    </button>
+  </div>
+
+  <!-- Contenu des détails -->
+  <div *ngIf="!isLoading && service" class="details-content">
+    <!-- Carte d'informations principales -->
+    <div class="info-card">
+      <div class="card-header">
+        <h2>
+          <i class="fas fa-building"></i>
+          {{ service.nom }}
+        </h2>
+        <div class="card-actions">
+          <button (click)="onEdit()" class="btn-action edit">
+            <i class="fas fa-edit"></i> Modifier
+          </button>
+          <button (click)="onDelete()" class="btn-action delete">
+            <i class="fas fa-trash"></i> Supprimer
+          </button>
+        </div>
+      </div>
+      
+      <div class="card-body">
+        <div class="info-section">
+          <h3>Description</h3>
+          <p class="description">{{ service.description || 'Aucune description' }}</p>
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <i class="fas fa-calendar"></i>
+            <div>
+              <label>Date de création</label>
+              <p>{{ service.dateCreation | date:'dd/MM/yyyy à HH:mm' }}</p>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <i class="fas fa-hashtag"></i>
+            <div>
+              <label>ID du service</label>
+              <p class="service-id">{{ service.id }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-card">
+      <h3>
+        <i class="fas fa-chart-bar"></i>
+        Statistiques des interventions
+      </h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">{{ getInterventionStats().total }}</div>
+          <div class="stat-label">Total interventions</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ getInterventionStats().enCours }}</div>
+          <div class="stat-label">En cours</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ getInterventionStats().termine }}</div>
+          <div class="stat-label">Terminées</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interventions récentes -->
+    <div class="interventions-card">
+      <div class="card-header">
+        <h3>
+          <i class="fas fa-tools"></i>
+          Interventions récentes
+        </h3>
+        <button (click)="onAddIntervention()" class="btn-add">
+          <i class="fas fa-plus"></i> Ajouter une intervention
+        </button>
+      </div>
+      
+      <div *ngIf="!service.interventionsRecent || service.interventionsRecent.length === 0" 
+           class="no-data">
+        <i class="fas fa-info-circle"></i>
+        <p>Aucune intervention récente</p>
+      </div>
+      
+      <div *ngIf="service.interventionsRecent && service.interventionsRecent.length > 0" 
+           class="interventions-list">
+        <div *ngFor="let inter of service.interventionsRecent" 
+             class="intervention-item">
+          <div class="intervention-header">
+            <h4>{{ inter.titre }}</h4>
+            <span class="statut-badge" [class]="getStatutClass(inter.statut)">
+              {{ inter.statut }}
+            </span>
+          </div>
+          
+          <div class="intervention-details">
+            <div class="detail-item">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span class="urgence" [class]="getUrgenceClass(inter.urgence)">
+                {{ inter.urgence }}
+              </span>
+            </div>
+            
+            <div class="detail-item">
+              <i class="fas fa-calendar"></i>
+              <span>{{ inter.dateCreation | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

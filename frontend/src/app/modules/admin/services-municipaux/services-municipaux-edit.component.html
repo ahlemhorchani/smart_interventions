@@ -1,0 +1,163 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="edit-container">
+  <!-- En-tête -->
+  <div class="edit-header">
+    <div class="header-content">
+      <button routerLink="/admin/services-municipaux" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Retour à la liste
+      </button>
+      <h1>
+        <i class="fas fa-edit"></i>
+        Modifier le Service Municipal
+      </h1>
+      <p class="subtitle">
+        Mettez à jour les informations du service
+      </p>
+    </div>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Chargement du service...</p>
+  </div>
+
+  <!-- Formulaire d'édition -->
+  <div *ngIf="!isLoading" class="edit-content">
+    <form [formGroup]="serviceForm" (ngSubmit)="onSubmit()" class="edit-form">
+      
+      <!-- Message de succès -->
+      <div *ngIf="successMessage" class="alert success">
+        <i class="fas fa-check-circle"></i>
+        <div>
+          <strong>Succès !</strong>
+          <p>{{ successMessage }}</p>
+        </div>
+      </div>
+
+      <!-- Message d'erreur -->
+      <div *ngIf="errorMessage" class="alert error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div>
+          <strong>Erreur</strong>
+          <p>{{ errorMessage }}</p>
+        </div>
+      </div>
+
+      <!-- Informations du service -->
+      <div class="form-section">
+        <h3>
+          <i class="fas fa-info-circle"></i>
+          Informations principales
+        </h3>
+        
+        <!-- Nom du service -->
+        <div class="form-group">
+          <label for="nom" class="form-label">
+            <i class="fas fa-building"></i>
+            Nom du service <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="nom"
+            formControlName="nom"
+            placeholder="Ex: Service de Voirie, Éclairage Public..."
+            class="form-control"
+            [class]="getFieldClass(nom)"
+          >
+          <div *ngIf="nom?.invalid && nom?.touched" class="error-messages">
+            <small *ngIf="nom?.errors?.['required']" class="error">
+              <i class="fas fa-exclamation-circle"></i> Le nom est obligatoire
+            </small>
+            <small *ngIf="nom?.errors?.['minlength']" class="error">
+              <i class="fas fa-exclamation-circle"></i> Minimum 3 caractères
+            </small>
+            <small *ngIf="nom?.errors?.['maxlength']" class="error">
+              <i class="fas fa-exclamation-circle"></i> Maximum 100 caractères
+            </small>
+            <small *ngIf="nom?.errors?.['pattern']" class="error">
+              <i class="fas fa-exclamation-circle"></i> Caractères spéciaux non autorisés
+            </small>
+          </div>
+          <div *ngIf="nom?.valid && nom?.touched" class="success-message">
+            <i class="fas fa-check-circle"></i> Nom valide
+          </div>
+          <div class="hint">
+            <i class="fas fa-lightbulb"></i>
+            Utilisez un nom clair et descriptif pour identifier le service
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description" class="form-label">
+            <i class="fas fa-align-left"></i>
+            Description
+          </label>
+          <textarea
+            id="description"
+            formControlName="description"
+            placeholder="Décrivez en détail le rôle et les responsabilités de ce service..."
+            class="form-control"
+            rows="5"
+            [class]="getFieldClass(description)"
+          ></textarea>
+          <div class="char-count">
+            <span>{{ description?.value?.length || 0 }}</span> / 500 caractères
+          </div>
+          <div *ngIf="description?.invalid && description?.touched" class="error-messages">
+            <small *ngIf="description?.errors?.['maxlength']" class="error">
+              <i class="fas fa-exclamation-circle"></i> Maximum 500 caractères
+            </small>
+          </div>
+          <div *ngIf="description?.valid && description?.touched" class="success-message">
+            <i class="fas fa-check-circle"></i> Description valide
+          </div>
+          <div class="hint">
+            <i class="fas fa-lightbulb"></i>
+            Incluez les missions principales et le champ d'action du service
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions du formulaire -->
+      <div class="form-actions">
+        <div class="action-buttons">
+          <button type="button" (click)="onCancel()" class="btn btn-secondary" [disabled]="isSubmitting">
+            <i class="fas fa-times"></i>
+            Annuler
+          </button>
+          
+          <button type="button" (click)="onDelete()" class="btn btn-danger" [disabled]="isSubmitting">
+            <i class="fas fa-trash"></i>
+            Supprimer
+          </button>
+          
+          <button 
+            type="submit" 
+            [disabled]="serviceForm.invalid || isSubmitting" 
+            class="btn btn-primary"
+          >
+            <i class="fas fa-save"></i>
+            {{ isSubmitting ? 'Mise à jour...' : 'Enregistrer les modifications' }}
+            <span *ngIf="isSubmitting" class="spinner"></span>
+          </button>
+        </div>
+
+        <!-- Validation résumé -->
+        <div class="validation-summary" *ngIf="serviceForm.touched">
+          <div class="summary-item" [class.valid]="nom?.valid" [class.invalid]="nom?.invalid">
+            <i class="fas" [class.fa-check]="nom?.valid" [class.fa-times]="nom?.invalid"></i>
+            Nom du service
+          </div>
+          <div class="summary-item" [class.valid]="description?.valid" [class.invalid]="description?.invalid">
+            <i class="fas" [class.fa-check]="description?.valid" [class.fa-times]="description?.invalid"></i>
+            Description
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>

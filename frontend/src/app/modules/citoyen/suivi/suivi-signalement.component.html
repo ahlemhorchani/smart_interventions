@@ -1,0 +1,29 @@
+<!-- src/app/modules/citoyen/suivi/suivi-signalement.component.html -->
+<div class="container" *ngIf="signalement; else loadingTemplate">
+  <h2>Suivi du signalement: {{ signalement.titre }}</h2>
+
+  <div class="signalement-details">
+    <p><strong>Description:</strong> {{ signalement.description }}</p>
+    <p><strong>Localisation:</strong> {{ signalement.localisation }}</p>
+    <p><strong>Statut:</strong> {{ signalement.statut }}</p>
+    <p *ngIf="signalement.photo"><strong>Photo:</strong><br>
+      <img [src]="signalement.photo" alt="Photo signalement" width="300">
+    </p>
+    <p><strong>Date de création:</strong> {{ formatDate(signalement.dateCreation) }}</p>
+  </div>
+
+  <h3>Historique</h3>
+  <ul *ngIf="signalement.historique?.length; else noHistorique">
+    <li *ngFor="let h of signalement.historique">
+      <strong>{{ h.date | date:'short' }}:</strong> {{ h.action }} (par {{ h.responsable }})
+    </li>
+  </ul>
+
+  <ng-template #noHistorique>
+    <p>Aucun historique disponible pour ce signalement.</p>
+  </ng-template>
+</div>
+
+<ng-template #loadingTemplate>
+  <p>Chargement du signalement...</p>
+</ng-template>
